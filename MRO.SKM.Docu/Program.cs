@@ -1,5 +1,7 @@
 using MRO.SKM.Docu.Components;
 using MRO.SKM.Docu.Infrastructure;
+using MRO.SMK.Docu.ApplicationCore.Extensions;
+using MudBlazor.Services;
 
 namespace MRO.SKM.Docu
 {
@@ -14,6 +16,9 @@ namespace MRO.SKM.Docu
                 .AddInteractiveServerComponents();
 
             builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("debug.Db"));
+            builder.Services.AddApplicationCore();
+
+            builder.Services.AddMudServices();
             
             var app = builder.Build();
 

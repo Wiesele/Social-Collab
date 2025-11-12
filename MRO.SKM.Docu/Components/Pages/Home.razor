@@ -1,4 +1,10 @@
 ﻿@page "/"
+@using MRO.SMK.Docu.ApplicationCore.Services
+@inject  SettingService settings;
+
+@{
+    settings.GetSettings();
+}
 
 <PageTitle>Home</PageTitle>
 
