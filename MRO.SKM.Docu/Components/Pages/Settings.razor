@@ -1,0 +1,57 @@
+﻿@page "/Settings"
+@using MRO.SMK.Docu.ApplicationCore.Models.Settings
+@using MRO.SMK.Docu.ApplicationCore.Services
+@inject SettingService setting;
+<PageTitle>Einstellungen</PageTitle>
+
+
+<MudDataGrid Items="@SettingValues"
+             Filterable="false"
+             QuickFilter="_quickFilter"
+             SortMode="@SortMode.Single"
+             Dense="true"
+             Hover="true"
+             Groupable="false">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Einstellungen</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="_searchString" 
+                      Placeholder="Suche" 
+                      Adornment="Adornment.Start" 
+                      Immediate="true"
+                      AdornmentIcon="@Icons.Material.Filled.Search" 
+                      IconSize="Size.Medium" 
+                      Clearable="true"
+                      Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="x => x.Name"/>
+        <PropertyColumn Property="x => x.Value"/>
+    </Columns>
+</MudDataGrid>
+
+@code {
+    
+    public List<SettingValue> SettingValues { get; set; }
+
+    private string _searchString;
+    
+    private Func<SettingValue, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    };
+    
+    protected override async Task OnInitializedAsync()
+    {
+        this.SettingValues = this.setting.GetSettingsDictionary();
+        
+        this.StateHasChanged();
+    }
+
+}

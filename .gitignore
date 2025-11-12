@@ -134,3 +134,6 @@ _NCrunch*
 
 .vs/
 .idea/
+
+
+*/appsettings.Development.json

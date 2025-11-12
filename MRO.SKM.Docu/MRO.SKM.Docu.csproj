@@ -9,6 +9,8 @@
   <ItemGroup>
     <ProjectReference Include="..\MRO.SKM.Docu.ApplicationCore\MRO.SKM.Docu.ApplicationCore.csproj" />
     <ProjectReference Include="..\MRO.SKM.Docu.Infrastructure\MRO.SKM.Docu.Infrastructure.csproj" />
+    <ProjectReference Include="..\MRO.SKM.GitProvider\MRO.SKM.GitProvider.csproj" />
+    <ProjectReference Include="..\MRO.SKM.SDK\MRO.SKM.SDK.csproj" />
   </ItemGroup>
 
   <ItemGroup>

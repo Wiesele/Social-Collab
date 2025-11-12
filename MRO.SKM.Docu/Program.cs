@@ -20,6 +20,8 @@ namespace MRO.SKM.Docu
 
             builder.Services.AddMudServices();
             
+            builder.Services.AddSDKResources();
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

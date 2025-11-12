@@ -1,0 +1,72 @@
+﻿@page "/Repositories"
+@using MRO.SMK.Docu.ApplicationCore.Models
+<PageTitle>Repositories</PageTitle>
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudGrid>
+            <MudItem xs="9">
+                <h1>Repositories</h1>
+            </MudItem>
+            <MudItem xs="3" Class="d-flex justify-end">
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary">Repository hinzufügen</MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudGrid>
+            <MudItem xs="9">
+            </MudItem>
+            <MudItem xs="3" Class="d-flex justify-end">
+                <MudTextField @bind-Value="_repoFilter"
+                              Placeholder="Repositories durchsuchen"
+                              Adornment="Adornment.Start"
+                              Immediate="true"
+                              AdornmentIcon="@Icons.Material.Filled.Search"
+                              IconSize="Size.Medium"
+                              Clearable="true"
+                              Class="mt-0"></MudTextField>
+            </MudItem>
+        </MudGrid>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudPaper>
+            <MudList T="Repository">
+                @foreach (var repo in Repos)
+                {
+                    <MudListItem>
+                        <AvatarContent>
+                            <MudAvatar Color="Color.Primary">
+                                @repo.Name.First()
+                            </MudAvatar>
+                        </AvatarContent>
+                        <ChildContent>
+                            @repo.Name
+                        </ChildContent>
+                    </MudListItem>
+                }
+
+            </MudList>
+        </MudPaper>
+    </MudItem>
+
+</MudGrid>
+
+@code {
+    private string _repoFilter;
+
+    public List<Repository> Repos = new List<Repository>()
+    {
+        new ()
+        {
+            Name = "UHD Tools"
+        },
+        new ()
+        {
+            Name = "IRIS"
+        }
+    };
+
+}

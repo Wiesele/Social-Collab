@@ -12,4 +12,9 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.10" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\MRO.SKM.GitProvider\MRO.SKM.GitProvider.csproj" />
+      <ProjectReference Include="..\MRO.SKM.SDK\MRO.SKM.SDK.csproj" />
+    </ItemGroup>
+
 </Project>

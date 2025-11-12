@@ -1,6 +1,11 @@
 ﻿
-<MudNavMenu>
+<MudNavMenu Rounded="true" Style="display: flex; flex-flow: column; height: inherit;">
     <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">Home</MudNavLink>
+    <MudNavLink Href="/repositories" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Assignment">Repositories</MudNavLink>
+    
+    <MudDivider></MudDivider>
+    
+    <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Settings">Einstellungen</MudNavLink>
     @* <MudNavGroup Title="Settings" Expanded="true"> *@
     @*     <MudNavLink Href="/users"  Match="NavLinkMatch.Prefix">Users</MudNavLink> *@
     @*     <MudNavLink Href="/security"  Match="NavLinkMatch.Prefix">Security</MudNavLink> *@
