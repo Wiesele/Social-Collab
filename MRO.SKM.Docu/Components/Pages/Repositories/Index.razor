@@ -1,5 +1,7 @@
 ﻿@page "/Repositories"
 @using MRO.SMK.Docu.ApplicationCore.Models
+@inject NavigationManager _nav
+
 <PageTitle>Repositories</PageTitle>
 
 <MudGrid>
@@ -9,7 +11,11 @@
                 <h1>Repositories</h1>
             </MudItem>
             <MudItem xs="3" Class="d-flex justify-end">
-                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary">Repository hinzufügen</MudButton>
+                <MudButton 
+                    Variant="Variant.Filled" 
+                    StartIcon="@Icons.Material.Filled.Add" 
+                    Color="Color.Primary" 
+                    OnClick="@(() => _nav.NavigateTo("repositories/add"))">Repository hinzufügen</MudButton>
             </MudItem>
         </MudGrid>
     </MudItem>

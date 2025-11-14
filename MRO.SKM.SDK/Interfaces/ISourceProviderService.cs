@@ -1,6 +1,8 @@
-﻿namespace MRO.SKM.SDK.Interfaces;
+﻿using MRO.SKM.SDK.Models;
 
-public interface ISourceProviderService
+namespace MRO.SKM.SDK.Interfaces;
+
+public interface ISourceProviderService: IBaseProviderService
 {
-    
+    public void GetEditorConfiguration(EditorConfiguration config);
 }

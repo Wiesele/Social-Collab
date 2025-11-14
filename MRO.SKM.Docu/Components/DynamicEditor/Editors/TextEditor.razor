@@ -1,0 +1,27 @@
+﻿@using MRO.SKM.Docu.Models.DynamicEditors
+@using MRO.SKM.SDK.Models.Editors
+
+@if (Configuration != null && Value != null)
+{
+    <MudTextField Label="@Configuration.Lable" 
+                  ValueChanged="async (string a) => await OnEditorChange(a)" 
+                  For="() => this.Value.Value"/>
+}
+
+@code {
+    [Parameter]
+    public TextEditorConfiguration? Configuration { get; set; }
+    [Parameter]
+    public DynamicEditorValue<string>? Value { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnValuesUpdated { get; set; }
+
+    private async Task OnEditorChange(string newValue)
+    {
+        if (newValue != this.Value.Value)
+        {
+            this.Value.Value = newValue;
+            await this.OnValuesUpdated.InvokeAsync(true);
+        }
+    }
+}

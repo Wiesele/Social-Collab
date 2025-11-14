@@ -1,9 +1,35 @@
-﻿@page "/Repositories/Add"
+﻿@page "/repositories/add"
+@using MRO.SMK.Docu.ApplicationCore.Models
+@using MRO.SKM.Docu.Components.DynamicEditor
 <h3>Repository hinzufügen</h3>
 
+<MudGrid>
+    <MudItem xs="12" sm="7">
+        <MudCard>
+            <MudCardContent>
+                <MudTextField Label="Repository Name"
+                              @bind-Value="Repository.Name" For="@(() => Repository.Name)"/>
+                <MudSelect Label="Quelle" Class="mt-3"
+                           For="@(() => Repository.SourceProviderService)"
+                           ValueChanged="(Guid d) => OnSourceProviderChange(d)">
+                    <MudSelectItem Value="Guid.Empty">Keine</MudSelectItem>
+                    @foreach (var item in SourceProviderServices.OrderBy(e => e.DisplayName))
+                    {
+                        <MudSelectItem Value="item.UUID">@item.DisplayName</MudSelectItem>
+                    }
+                </MudSelect>
 
+                @if (SelectedSourceProvider != null)
+                {
+                    <DynamicEditor Configuration="SourceProviderEditorConfig" OnValuesChange="e => this.SourceProviderEditorValue = e"></DynamicEditor>
+                }
 
-
-@code {
-    
-}
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary"
+                           Class="ml-auto" OnClick="AddNewRepository">Hinzufügen
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>

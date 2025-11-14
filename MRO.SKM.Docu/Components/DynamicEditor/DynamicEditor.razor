@@ -1,0 +1,88 @@
+﻿@using System.Diagnostics
+@using System.Threading.RateLimiting
+@using MRO.SKM.Docu.Components.DynamicEditor.Editors
+@using MRO.SKM.Docu.Models.DynamicEditors
+@using MRO.SKM.SDK.Models
+@using MRO.SKM.SDK.Models.Editors
+
+@if (this.Configuration != null && this.Configuration.Editors.Any())
+{
+    <MudGrid>
+        <MudItem xs="12" sm="12">
+            @foreach (var editor in this.Values.OrderBy(e => e.EditorConfiguration.Index))
+            {
+                @if (editor.EditorConfiguration is TextEditorConfiguration textedit)
+                {
+                    <TextEditor Configuration="textedit" 
+                                Value="editor as DynamicEditorValue<string>"
+                                OnValuesUpdated="OnEditorChange"></TextEditor>
+                }
+
+                @if (editor.EditorConfiguration is PasswordEditorConfiguration password)
+                {
+                    <PasswordEditor Configuration="password" 
+                                    Value="editor as DynamicEditorValue<string>"
+                                    OnValuesUpdated="OnEditorChange"></PasswordEditor>
+                }
+
+                @if (editor.EditorConfiguration is CheckBoxEditorConfiguration checkbox)
+                {
+                    <Checkbox Configuration="checkbox" 
+                              Value="editor as DynamicEditorValue<bool>"
+                              OnValuesUpdated="OnEditorChange"></Checkbox>
+                }
+            }
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    private EditorConfiguration? _configuration;
+
+    [Parameter]
+    [Category("Data")]
+    public EditorConfiguration? Configuration
+    {
+        get { return this._configuration; }
+        set
+        {
+            this.Values = new();
+            this._configuration = value;
+
+            foreach (var config in value.Editors)
+            {
+                this.Values.Add(this.GetValueItemForEditor(config));
+            }
+        }
+    }
+
+    private IDynamicEditorValue GetValueItemForEditor(BaseEditor config)
+    {
+        IDynamicEditorValue value;
+
+        if (config is CheckBoxEditorConfiguration)
+        {
+            value = new DynamicEditorValue<bool>();
+            value.Name = config.Name;
+            value.EditorConfiguration = config;
+        }
+        else
+        {
+            value = new DynamicEditorValue<string>();
+            value.Name = config.Name;
+            value.EditorConfiguration = config;
+        }
+
+        return value;
+    }
+
+    public List<IDynamicEditorValue> Values { get; set; } = new();
+
+    private async Task OnEditorChange(bool idk)
+    {
+        await this.OnValuesChange.InvokeAsync(this.Values);
+    }
+
+
+    [Parameter] public EventCallback<List<IDynamicEditorValue>> OnValuesChange { get; set; } = new();
+}
