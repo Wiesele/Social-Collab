@@ -1,5 +1,6 @@
 ﻿using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models;
+using MRO.SMK.SDK.Models;
 
 namespace MRO.SKM.GitProvider;
 
@@ -27,5 +28,10 @@ public class GitHubSourceProviderService : ISourceProviderService
             e.Name = "Passwd";
             e.Lable = "ddddLable";
         });
+    }
+
+    public Task CloneRepository(Repository repository)
+    {
+        throw new NotImplementedException();
     }
 }

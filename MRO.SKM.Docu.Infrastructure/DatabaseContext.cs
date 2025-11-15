@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MRO.SKM.Docu.ApplicationCore.Interfaces;
 using MRO.SMK.Docu.ApplicationCore.Models;
+using MRO.SMK.SDK.Models;
 
 namespace MRO.SKM.Docu.Infrastructure;
 

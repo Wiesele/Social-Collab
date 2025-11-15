@@ -10,4 +10,8 @@
       <ProjectReference Include="..\MRO.SKM.SDK\MRO.SKM.SDK.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
+    </ItemGroup>
+
 </Project>

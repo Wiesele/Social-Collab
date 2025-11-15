@@ -1,8 +1,10 @@
 ﻿using MRO.SKM.SDK.Models;
+using MRO.SMK.SDK.Models;
 
 namespace MRO.SKM.SDK.Interfaces;
 
 public interface ISourceProviderService: IBaseProviderService
 {
-    public void GetEditorConfiguration(EditorConfiguration config);
+    void GetEditorConfiguration(EditorConfiguration config);
+    Task CloneRepository(Repository repository);  
 }

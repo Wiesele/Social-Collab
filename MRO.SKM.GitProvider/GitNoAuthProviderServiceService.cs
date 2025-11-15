@@ -1,6 +1,8 @@
 ﻿using MRO.SKM.GitProvider.Models;
+using MRO.SKM.SDk.Extensions;
 using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models;
+using MRO.SMK.SDK.Models;
 
 namespace MRO.SKM.GitProvider;
 
@@ -17,5 +19,12 @@ public class GitNoAuthProviderServiceService : ISourceProviderService
             e.Name = nameof(GitNoAuthData.RepoUrl);
             e.Lable = "URL";
         });
+    }
+
+    public async Task CloneRepository(Repository repository)
+    {
+        var configuration = repository.SourceProviderConfiguration.ParseAsJson<GitNoAuthData>();
+    
+        LibGit2Sharp.Repository.Clone(configuration.RepoUrl, repository.Location);
     }
 }

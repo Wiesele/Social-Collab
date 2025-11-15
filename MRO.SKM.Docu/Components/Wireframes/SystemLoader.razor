@@ -1,0 +1,60 @@
+﻿@using System.Reflection
+@using System.Runtime.CompilerServices
+@using MRO.SKM.SDk.Extensions
+@using MRO.SMK.Docu.ApplicationCore.Services
+@inject LoaderService loaderService
+
+<MudOverlay Visible="@loaderService.Visible" DarkBackground="true">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudGrid Justify="Justify.Center">
+                    <MudItem sm="12" Class="d-flex align-center justify-center">
+                        <MudText Typo="Typo.h6">Bitte Warten</MudText>
+                    </MudItem>
+                </MudGrid>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudGrid Justify="Justify.Center">
+                <MudItem sm="12" Class="d-flex align-center justify-center">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+                </MudItem>
+                @if (!this._text.IsNullOrWhiteSpace())
+                {
+                    <MudItem sm="12" Class="d-flex align-center justify-center">
+                        <MudText>@this._text</MudText>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+</MudOverlay>
+
+@code {
+    private bool _visibility = false;
+    private string _text = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        this._visibility = loaderService.Visible;
+        this._text = loaderService.Text;
+
+        this.loaderService.VisibilityChanged += OnVisiblilityChanged;
+        this.loaderService.TextChanged += OnTextChanged;
+    }
+
+    private void OnVisiblilityChanged(object? sender, bool newValue)
+    {
+        this._visibility = newValue;
+        this.StateHasChanged();
+    }
+    private void OnTextChanged(object? sender, string newValue)
+    {
+        this._text = newValue;
+        this.StateHasChanged();
+    }
+
+}

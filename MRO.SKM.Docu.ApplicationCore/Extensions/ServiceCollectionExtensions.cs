@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
     public static void AddApplicationCore(this IServiceCollection services)
     {
         services.AddScoped<SettingService>();
+        services.AddScoped<LoaderService>();
     }
 
     public static void AddSDKResources(this IServiceCollection services)

@@ -1,6 +1,7 @@
-﻿using MRO.SMK.Docu.ApplicationCore.Abstracts;
+﻿
+using MRO.SMK.SDK.Models.Abstracts;
 
-namespace MRO.SMK.Docu.ApplicationCore.Models;
+namespace MRO.SMK.SDK.Models;
 
 public class Repository : NamedEntity
 {

@@ -1,4 +1,4 @@
-﻿namespace MRO.SMK.Docu.ApplicationCore.Abstracts;
+﻿namespace MRO.SMK.SDK.Models.Abstracts;
 
 public abstract class NamedEntity: BaseEntity
 {
