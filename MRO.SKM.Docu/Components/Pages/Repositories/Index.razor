@@ -1,6 +1,8 @@
 ﻿@page "/Repositories"
+@using MRO.SMK.Docu.ApplicationCore.Services
 @using MRO.SMK.SDK.Models
 @inject NavigationManager _nav
+@inject RepositoryService repositoryService
 
 <PageTitle>Repositories</PageTitle>
 
@@ -42,7 +44,7 @@
             <MudList T="Repository">
                 @foreach (var repo in Repos)
                 {
-                    <MudListItem>
+                    <MudListItem OnClick="() => this.Nav(repo.Id)">
                         <AvatarContent>
                             <MudAvatar Color="Color.Primary">
                                 @repo.Name.First()
@@ -63,16 +65,18 @@
 @code {
     private string _repoFilter;
 
-    public List<Repository> Repos = new List<Repository>()
+    public List<Repository> Repos { get; set; } = new List<Repository>();
+    protected override void OnInitialized()
     {
-        new ()
-        {
-            Name = "UHD Tools"
-        },
-        new ()
-        {
-            Name = "IRIS"
-        }
-    };
+        base.OnInitialized();
+
+        this.Repos = repositoryService.List();
+        this.StateHasChanged();
+    }
+
+    private void Nav(Guid guid)
+    {
+        this._nav.NavigateTo("/repository/" + guid);
+    }
 
 }

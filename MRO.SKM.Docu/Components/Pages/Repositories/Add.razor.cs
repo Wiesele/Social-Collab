@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MRO.SKM.Docu.ApplicationCore.Interfaces;
 using MRO.SKM.Docu.Models.DynamicEditors;
@@ -12,10 +13,10 @@ namespace MRO.SKM.Docu.Components.Pages.Repositories;
 
 public partial class Add : ComponentBase
 {
-    private SettingService SettingService { get; set; }
     private LoaderService LoaderService { get; set; }
-    private IDatabaseContext DatabaseContext { get; set; }
     private IServiceProvider Services { get; set; }
+    private NavigationManager NavigationManager { get; set; }
+    private RepositoryService RepositoryService { get; set; }
 
     public Repository Repository { get; set; } = new();
     public List<ISourceProviderService> SourceProviderServices { get; set; } = new();
@@ -27,13 +28,17 @@ public partial class Add : ComponentBase
     private List<IDynamicEditorValue> SourceProviderEditorValue { get; set; }
 
 
-    public Add(IServiceProvider services, IDatabaseContext databaseContext, LoaderService loaderService,
-        SettingService settingService)
+    public Add(IServiceProvider services, 
+        IDatabaseContext databaseContext, 
+        LoaderService loaderService,
+        SettingService settingService,
+        NavigationManager navigationManager,
+        RepositoryService repositoryService)
     {
         this.Services = services;
         this.LoaderService = loaderService;
-        this.SettingService = settingService;
-        this.DatabaseContext = databaseContext;
+        this.NavigationManager = navigationManager;
+        this.RepositoryService = repositoryService;
     }
 
     protected override void OnInitialized()
@@ -64,6 +69,8 @@ public partial class Add : ComponentBase
 
     private async Task AddNewRepository(MouseEventArgs arg)
     {
+        this.LoaderService.ShowLoader("Klone Repository");
+
         var sourceProviderConifig = new Dictionary<string, object>();
 
         foreach (var item in this.SourceProviderEditorValue)
@@ -71,25 +78,10 @@ public partial class Add : ComponentBase
             sourceProviderConifig.Add(item.Name, item.GetValue());
         }
 
-        var settings = this.SettingService.GetSettings();
-
-        var repository = new Repository();
-        repository.Name = this.Repository.Name;
-        repository.SourceProviderService = this.SelectedSourceProvider.UUID;
-        repository.SourceProviderConfiguration = sourceProviderConifig.AsJson();
-        repository.Location = Path.Join(settings.Git.LocalFolder, repository.Name + "_" + Guid.NewGuid());
-        this.DatabaseContext.Repositories.Add(repository);
-        this.DatabaseContext.SaveChanges();
-
-        this.LoaderService.ShowLoader("Klone Repository");
-
-        if (!Directory.Exists(repository.Location))
-        {
-            Directory.CreateDirectory(repository.Location);
-        }
-
-        await this.SelectedSourceProvider.CloneRepository(repository);
+        var repo = await this.RepositoryService.CreateAndClone(this.Repository.Name, this.SelectedSourceProvider.UUID, sourceProviderConifig);
 
         this.LoaderService.HideLoader();
+        
+        NavigationManager.NavigateTo("/repository/" + repo.Id);
     }
 }
