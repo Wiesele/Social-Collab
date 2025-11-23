@@ -1,14 +1,18 @@
 ﻿using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models;
 using MRO.SMK.SDK.Models;
-using MRO.SMK.SDK.Models.Abstracts;
 
-namespace MRO.SMK.Docu.ApplicationCore.Services;
+namespace MRO.SKM.CSharpProvider;
 
-public class RoslynService
+public class CSharpProviderService: ILanguageProviderService
 {
-    public List<CodeFile> Test(Repository repository)
+    public Guid UUID { get; } = new Guid("20C52B1F-9CB3-4D64-AC51-F17E0FA10579");
+    public string DisplayName { get; } = "C#";
+    
+    
+    public List<CodeFile> AnalyzeRepository(Repository repository)
     {
         var files = Directory.GetFiles(repository.Location, "*.cs", SearchOption.AllDirectories);
 
@@ -16,7 +20,7 @@ public class RoslynService
 
         foreach (var file in files)
         {
-            var data = this.TestExtracFile(file);
+            var data = this.AnalyzeFile(file);
 
             methods.Add(data);
         }
@@ -24,19 +28,19 @@ public class RoslynService
         return methods;
     }
 
-    public CodeFile TestExtracFile(string path)
+    public CodeFile AnalyzeFile(string path)
     {
         var codeFile = new CodeFile()
         {
             Name = Path.GetFileNameWithoutExtension(path),
             Key = path,
-            Classes = this.TestExtractClasses(File.ReadAllText(path)),
+            Classes = this.ExtractClasses(File.ReadAllText(path)),
         };
         
         return codeFile;
     }
 
-    public List<Class> TestExtractClasses(string sourceCode)
+    public List<Class> ExtractClasses(string sourceCode)
     {
         var data = new List<Class>();
         
@@ -59,7 +63,7 @@ public class RoslynService
                 Name = name,
                 Key = key,
                 Body = code,
-                Methods = this.TestExtractMethod(code)
+                Methods = this.ExtractMethod(code)
             };
             
             data.Add(itemData);
@@ -68,7 +72,7 @@ public class RoslynService
         return data;
     }
 
-    public List<Method> TestExtractMethod(string sourceCode, bool includeLocalFunctions = false)
+    public List<Method> ExtractMethod(string sourceCode, bool includeLocalFunctions = false)
     {
         var tree = CSharpSyntaxTree.ParseText(sourceCode,
             new CSharpParseOptions(LanguageVersion.Preview));

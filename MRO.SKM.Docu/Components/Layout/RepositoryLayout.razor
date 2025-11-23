@@ -1,14 +1,15 @@
 ﻿@using MRO.SKM.Docu.Components.Wireframes
 @inherits LayoutComponentBase
 
+
 <MudProviders ></MudProviders>
 <SystemLoader></SystemLoader>
 
 <MudLayout>
-    <HeaderAppBar/>
+    <RepositoryHeaderAppBar Repository="this.SelectedRepository"/>
 
     <MudDrawer Open="true" ClipMode="DrawerClipMode.Always" Elevation="2" Width="250px">
-        <RepositoryNavMenu/>
+        <RepositoryNavMenu Repository="this.SelectedRepository"/>
     </MudDrawer>
 
     <MudMainContent>

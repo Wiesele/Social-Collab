@@ -7,13 +7,11 @@ namespace MRO.SKM.Docu.Components.Pages.Repository2;
 public partial class Home : ComponentBase
 {
     private RepositoryService RepositoryService { get; set; }
-    private RoslynService RoslynService { get; set; }
     
     
-    public Home(RepositoryService repositoryService, RoslynService roslynService)
+    public Home(RepositoryService repositoryService)
     {
         this.RepositoryService = repositoryService;
-        this.RoslynService = roslynService;
     }
     
     [Parameter]
@@ -29,7 +27,5 @@ public partial class Home : ComponentBase
         this.Repository = this.RepositoryService.GetById(this.Id);
         
         this.StateHasChanged();
-
-        this.RoslynService.Test(this.Repository);
     }
 }

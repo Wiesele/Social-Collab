@@ -1,8 +1,29 @@
-﻿<MudNavMenu Rounded="true" Style="display: flex; flex-flow: column; height: inherit;">
-    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">Home</MudNavLink>
-    <MudNavLink Href="/repositories" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Assignment">Code</MudNavLink>
-    
-    <MudDivider></MudDivider>
-    
-    <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Settings">Einstellungen</MudNavLink>
+﻿@using MRO.SKM.SDk.Extensions
+<MudNavMenu Rounded="true" Style="display: flex; flex-flow: column; height: inherit;">
+    @if (this.Repository == null)
+    {
+        <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+    }
+    else
+    {
+        <MudNavLink Href="@GetUrl("")" Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Outlined.Dashboard">Home
+        </MudNavLink>
+        <MudNavLink Href="@GetUrl("code")" Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Outlined.Assignment">Code
+        </MudNavLink>
+
+        <MudDivider></MudDivider>
+
+        <MudNavLink Href="@GetUrl("settings/languages")" Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Outlined.Language">Spracheinstellungen
+        </MudNavLink>
+        
+        <MudNavLink Href="@GetUrl("settings/ai")" Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Outlined.Construction">AI-Einstellungen
+        </MudNavLink>
+        <MudNavLink Href="@GetUrl("settings")" Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Outlined.Settings">Einstellungen
+        </MudNavLink>
+    }
 </MudNavMenu>

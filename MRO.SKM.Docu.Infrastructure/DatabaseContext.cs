@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MRO.SKM.Docu.ApplicationCore.Interfaces;
+using MRO.SKM.SDK.Models;
 using MRO.SMK.Docu.ApplicationCore.Models;
 using MRO.SMK.SDK.Models;
 
@@ -12,4 +13,5 @@ public class DatabaseContext : DbContext, IDatabaseContext
     }
     
     public DbSet<Repository> Repositories { get; set; }
+    public DbSet<RepositoryLanguage> RepositoryLanguages { get; set; }
 }

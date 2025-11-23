@@ -21,4 +21,17 @@
     <PackageReference Include="MudBlazor" Version="8.14.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\Pages\Repository2\Settings\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Pages\Repository2\LanguageSettings\AddLanguageDialog.razor" />
+    <_ContentIncludedByDefault Remove="Components\Pages\Repository2\LanguageSettings\Home.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Components\Pages\Repository2\Settings\LanguageSettings\Home.razor" />
+  </ItemGroup>
+
 </Project>

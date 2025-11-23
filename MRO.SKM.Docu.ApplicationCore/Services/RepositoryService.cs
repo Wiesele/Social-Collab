@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using MRO.SKM.Docu.ApplicationCore.Interfaces;
 using MRO.SKM.SDk.Extensions;
 using MRO.SKM.SDK.Interfaces;
+using MRO.SKM.SDK.Models;
 using MRO.SMK.SDK.Models;
 
 namespace MRO.SMK.Docu.ApplicationCore.Services;
@@ -56,11 +58,29 @@ public class RepositoryService
 
     public Repository GetById(Guid id)
     {
-        return this.Database.Repositories.FirstOrDefault(e => e.Id == id);
+        return this.Database.Repositories.First(e => e.Id == id);
     }
 
     public List<Repository> List()
     {
         return this.Database.Repositories.ToList();
+    }
+
+    public void AddLanguage(Repository repository, Guid providerGuid)
+    {
+        var repoLangugae = new RepositoryLanguage()
+        {
+            ProviderId = providerGuid,
+        };
+        
+        var repo = this.GetById(repository.Id);
+        repo.Languages.Add(repoLangugae);
+
+        this.Database.SaveChanges();
+    }
+
+    public List<RepositoryLanguage> ListLanguages(Repository repository)
+    {
+        return this.Database.RepositoryLanguages.Include(e => e.Repository).Where(e => e.Repository.Id == repository.Id).ToList();
     }
 }

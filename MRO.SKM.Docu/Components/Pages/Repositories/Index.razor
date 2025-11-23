@@ -1,8 +1,11 @@
 ﻿@page "/Repositories"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using MRO.SMK.Docu.ApplicationCore.Constants
 @using MRO.SMK.Docu.ApplicationCore.Services
 @using MRO.SMK.SDK.Models
 @inject NavigationManager _nav
 @inject RepositoryService repositoryService
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 <PageTitle>Repositories</PageTitle>
 
@@ -74,9 +77,13 @@
         this.StateHasChanged();
     }
 
-    private void Nav(Guid guid)
+    private async void Nav(Guid guid)
     {
-        this._nav.NavigateTo("/repository/" + guid);
+        var repo = Repos.First(e => e.Id == guid);
+        
+        await ProtectedSessionStore.SetAsync(SessionStorageKeys.RepositoryId, repo.Id.ToString());
+        
+        this._nav.NavigateTo("/repository/" + repo.Id);
     }
 
 }

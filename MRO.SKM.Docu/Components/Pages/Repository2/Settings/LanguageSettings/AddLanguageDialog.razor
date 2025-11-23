@@ -1,0 +1,50 @@
+﻿@using MRO.SKM.SDK.Interfaces
+@using MRO.SKM.SDK.Models
+@using MRO.SMK.SDK.Models
+@inject IEnumerable<ILanguageProviderService> providers
+<MudDialog>
+    <TitleContent>
+        Sprache wählen
+    </TitleContent>
+    <DialogContent>
+        <MudSelect Label="Sprache" Class="mt-3"
+                   ValueChanged="(Guid d) => OnLanguageProviderChange(d)" Style="min-width: 200px;">
+            <MudSelectItem Value="Guid.Empty">Keine</MudSelectItem>
+            @foreach (var item in providers.OrderBy(e => e.DisplayName))
+            {
+                if (AlreadyAdded.Any(e => e.ProviderId == item.UUID))
+                {
+                    continue;
+                }
+                
+                <MudSelectItem Value="item.UUID">@item.DisplayName</MudSelectItem>
+            }
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="!SubmitEnabled">OK</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    private IMudDialogInstance MudDialog { get; set; }
+    [Parameter]
+    public List<RepositoryLanguage> AlreadyAdded { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok<Guid>(this.SelectedGuid));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private Guid SelectedGuid { get; set; } = Guid.Empty;
+    private bool SubmitEnabled = false;
+    private ILanguageProviderService Dummy { get; set; }
+
+    private void OnLanguageProviderChange(Guid guid)
+    {
+        this.SelectedGuid = guid;
+        this.SubmitEnabled = this.SelectedGuid != Guid.Empty;
+    }
+
+}

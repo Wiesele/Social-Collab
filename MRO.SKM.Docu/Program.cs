@@ -21,6 +21,7 @@ namespace MRO.SKM.Docu
             builder.Services.AddMudServices();
             
             builder.Services.AddSDKResources();
+            builder.Services.AddHttpContextAccessor();
             
             var app = builder.Build();
 
@@ -37,10 +38,12 @@ namespace MRO.SKM.Docu
 
             app.UseAntiforgery();
 
+            app.UseApplicationCore();
+
             app.MapStaticAssets();
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
-
+            
             app.Run();
         }
     }
