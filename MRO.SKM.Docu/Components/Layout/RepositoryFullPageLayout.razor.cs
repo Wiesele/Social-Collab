@@ -7,7 +7,7 @@ using MRO.SMK.SDK.Models;
 
 namespace MRO.SKM.Docu.Components.Layout;
 
-public partial class RepositoryLayout: LayoutComponentBase
+public partial class RepositoryFullPageLayout: LayoutComponentBase
 {
     private ProtectedSessionStorage ProtectedSessionStore { get; set; }
     private RepositoryService RepositoryService { get; set; }
@@ -17,7 +17,7 @@ public partial class RepositoryLayout: LayoutComponentBase
 
     public bool UseFullPage = false;
 
-    public RepositoryLayout(RepositoryService repositoryService, ProtectedSessionStorage protectedSessionStore)
+    public RepositoryFullPageLayout(RepositoryService repositoryService, ProtectedSessionStorage protectedSessionStore)
     {
         this.RepositoryService = repositoryService;
         this.ProtectedSessionStore = protectedSessionStore;

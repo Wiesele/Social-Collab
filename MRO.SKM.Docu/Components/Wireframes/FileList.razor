@@ -1,0 +1,24 @@
+﻿@using MRO.SKM.Docu.Models
+
+<MudPaper>
+    <MudTreeView Items="InitialTreeView" 
+                 ExpandOnClick="true" 
+                 Dense="true" 
+                 ServerData="LoadServerData"
+                 SelectedValueChanged="(FileListItem f) => FileChanged(f)">
+        <ItemTemplate>
+            @{
+                // Casting context from TreeItemData<string> to our own derived class TreeItemPresenter
+                // for convenient usage in the template
+                var presenter = context as FilePickerPresenter;
+            }
+            <MudTreeViewItem 
+                Items="@context.Children" 
+                Value="@context.Value" 
+                Icon="@context.Icon" 
+                Text="@context.Text" 
+                IconExpanded="@presenter.IconExpanded"
+                CanExpand="presenter.CanExpand"></MudTreeViewItem>
+        </ItemTemplate>
+    </MudTreeView>
+</MudPaper>

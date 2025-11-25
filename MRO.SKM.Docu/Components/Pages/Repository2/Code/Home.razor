@@ -1,0 +1,11 @@
+﻿@page "/repository/{id}/code"
+
+@layout RepositoryFullPageLayout
+<PageTitle>Quellcode</PageTitle>
+<MudGrid>
+    <MudItem>
+        <MudPaper>
+            <FileList BasePath="@Repository.Location" FileSelected="FileSelected"></FileList>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
