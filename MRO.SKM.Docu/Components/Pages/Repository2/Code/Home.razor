@@ -6,12 +6,12 @@
 
 <div style="height: 100%; position: fixed;" id="wrapper-div">
     <MudGrid Spacing="5" Style="height: 100%">
-        <MudItem xs="2" Style="height: 100%">
-            <MudPaper Style="height: 95%; overflow-y: auto;">
+        <MudItem xs="3" Style="height: 100%">
+            <MudPaper Style="height: 95%; overflow: auto;">
                     <FileList BasePath="@Repository.Location" FileSelected="FileSelected"></FileList>
             </MudPaper>
         </MudItem>
-        <MudItem xs="10" Style="height: 100%">
+        <MudItem xs="9" Style="height: 100%">
             <StandaloneCodeEditor @ref="Editor" Id="code-editor" CssClass="code-editor"
                                   ConstructionOptions="EditorConstructionOptions"></StandaloneCodeEditor>
         </MudItem>
