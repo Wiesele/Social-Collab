@@ -44,7 +44,7 @@ public class RepositoryService
         repository.Location = Path.Join(settings.Git.LocalFolder, repository.Name + "_" + Guid.NewGuid());
 
         this.Database.Repositories.Add(repository);
-        this.Database.SaveChanges();
+        await this.Database.SaveChangesAsync();
 
 
         if (!Directory.Exists(repository.Location))

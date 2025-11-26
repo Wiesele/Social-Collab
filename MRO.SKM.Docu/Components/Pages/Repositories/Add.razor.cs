@@ -1,11 +1,13 @@
 ﻿using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Web;
 using MRO.SKM.Docu.ApplicationCore.Interfaces;
 using MRO.SKM.Docu.Models.DynamicEditors;
 using MRO.SKM.SDk.Extensions;
 using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models;
+using MRO.SMK.Docu.ApplicationCore.Constants;
 using MRO.SMK.Docu.ApplicationCore.Services;
 using MRO.SMK.SDK.Models;
 
@@ -17,7 +19,8 @@ public partial class Add : ComponentBase
     private IServiceProvider Services { get; set; }
     private NavigationManager NavigationManager { get; set; }
     private RepositoryService RepositoryService { get; set; }
-
+    private ProtectedSessionStorage ProtectedSessionStore { get; set; }
+    
     public Repository Repository { get; set; } = new();
     public List<ISourceProviderService> SourceProviderServices { get; set; } = new();
 
@@ -33,12 +36,14 @@ public partial class Add : ComponentBase
         LoaderService loaderService,
         SettingService settingService,
         NavigationManager navigationManager,
-        RepositoryService repositoryService)
+        RepositoryService repositoryService,
+        ProtectedSessionStorage protectedSessionStore)
     {
         this.Services = services;
         this.LoaderService = loaderService;
         this.NavigationManager = navigationManager;
         this.RepositoryService = repositoryService;
+        this.ProtectedSessionStore = protectedSessionStore;
     }
 
     protected override void OnInitialized()
@@ -69,7 +74,7 @@ public partial class Add : ComponentBase
 
     private async Task AddNewRepository(MouseEventArgs arg)
     {
-        this.LoaderService.ShowLoader("Klone Repository");
+        await this.LoaderService.ShowLoader("Klone Repository");
 
         var sourceProviderConifig = new Dictionary<string, object>();
 
@@ -82,6 +87,9 @@ public partial class Add : ComponentBase
 
         this.LoaderService.HideLoader();
         
+        
+        await ProtectedSessionStore.SetAsync(SessionStorageKeys.RepositoryId, repo.Id.ToString());
+
         NavigationManager.NavigateTo("/repository/" + repo.Id);
     }
 }

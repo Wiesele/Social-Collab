@@ -37,7 +37,7 @@
 
     async Task ReloadRepository()
     {
-        await this.loader.ShowLoader();
+        await this.loader.ShowLoader("Lade Codestruktur");
         await this.RepositoryService.ReloadRepository(this.Repository);
         this.loader.HideLoader();
     }       
