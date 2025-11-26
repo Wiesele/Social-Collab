@@ -1,29 +1,35 @@
 ﻿@using MRO.SKM.Docu.Models.DynamicEditors
 @using MRO.SKM.SDK.Models.Editors
 
-@if (this.Configuration != null && this.Value != null)
+@if (this.Configuration != null)
 {
     <MudCheckBox Label="@Configuration.Lable" 
                  LabelPlacement="Placement.End" 
                  ValueChanged="async (bool a) => await OnEditorChange(a)" 
-                 For="() => this.Value.Value"></MudCheckBox>
+                 For="() => this.Value"></MudCheckBox>
 }
 
 @code {
     [Parameter]
     public CheckBoxEditorConfiguration? Configuration { get; set; }
+    public bool Value { get; set; }
+    
     [Parameter]
-    public DynamicEditorValue<bool>? Value { get; set; }
-    [Parameter]
-    public EventCallback<bool> OnValuesUpdated { get; set; }
+    public EventCallback<OnEditorChangeEventParam> OnValuesUpdated { get; set; }
 
     private async Task OnEditorChange(bool newValue)
     {
-        if (newValue != this.Value.Value)
+        if (newValue != this.Value)
         {
-            this.Value.Value = newValue;
-            await this.OnValuesUpdated.InvokeAsync(true);
+            this.Value = newValue;
+
+            var evt = new OnEditorChangeEventParam()
+            {
+                Value = newValue,
+                Name = this.Configuration.Name
+            };
+            
+            await this.OnValuesUpdated.InvokeAsync(evt);
         }
     }
-
 }

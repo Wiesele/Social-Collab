@@ -1,0 +1,24 @@
+﻿@using MRO.SKM.SDK.Models.SourceControl
+<MudGrid>
+    <MudItem md="12"
+             Class="d-flex justify-center align-center">
+        <MudMenu Label="@(SelectedBranch == null ? "Branch wählen" : SelectedBranch.DisplayName)"
+                 Variant="Variant.Filled"
+                 Color="Color.Primary"
+                 StartIcon="@Icons.Material.Filled.CallSplit"
+                 EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem Icon="@Icons.Material.Filled.ArrowDownward" OnClick="async () => await this.UpdateRepositoryClick()">Pull</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.ArrowUpward">Push</MudMenuItem>
+            <MudDivider></MudDivider>
+            @foreach (var item in Branches.OrderBy(e => e.DisplayName))
+            {
+                if (SelectedBranch != null && item.Id == this.SelectedBranch.Id)
+                {
+                    continue;
+                }
+
+                <MudMenuItem Label="@item.DisplayName" OnClick="() => OnBranchSelectionChanged(item)"/>
+            }
+        </MudMenu>
+    </MudItem>
+</MudGrid>

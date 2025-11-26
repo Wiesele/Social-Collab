@@ -1,5 +1,6 @@
 ﻿using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models;
+using MRO.SKM.SDK.Models.SourceControl;
 using MRO.SMK.SDK.Models;
 
 namespace MRO.SKM.GitProvider;
@@ -31,6 +32,21 @@ public class GitHubSourceProviderService : ISourceProviderService
     }
 
     public Task CloneRepository(Repository repository)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<Branch>> ListBranches(Repository repository)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task ChangeBranch(Repository repository, Branch branch)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateRepository(Repository repository)
     {
         throw new NotImplementedException();
     }

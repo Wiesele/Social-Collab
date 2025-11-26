@@ -1,10 +1,12 @@
 ﻿@page "/repository/{id}"
-@layout RepositoryLayout
 <PageTitle>Übersicht</PageTitle>
 
-<h3>Home</h3>
+<MudContainer MaxWidth="MaxWidth.Large">
+    <h3>Home</h3>
 
-@if (this.Repository != null)
-{
-    <span>@this.Repository.Name</span>
-}
+    @if (this.Repository != null)
+    {
+        <span>@this.Repository.Name</span>
+    }
+</MudContainer>
+

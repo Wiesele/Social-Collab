@@ -92,4 +92,9 @@ public partial class Add : ComponentBase
 
         NavigationManager.NavigateTo("/repository/" + repo.Id);
     }
+
+    private void SetDynamicValues(List<IDynamicEditorValue> dynamicEditorValues)
+    {
+        this.SourceProviderEditorValue = dynamicEditorValues;
+    }
 }

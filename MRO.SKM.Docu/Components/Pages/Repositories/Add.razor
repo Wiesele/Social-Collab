@@ -23,7 +23,7 @@
 
                 @if (SelectedSourceProvider != null)
                 {
-                    <DynamicEditor Configuration="SourceProviderEditorConfig" OnValuesChange="e => this.SourceProviderEditorValue = e"></DynamicEditor>
+                    <DynamicEditor Configuration="SourceProviderEditorConfig" OnValuesChange="e => this.SetDynamicValues(e)"></DynamicEditor>
                 }
 
             </MudCardContent>

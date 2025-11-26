@@ -14,21 +14,18 @@
                 @if (editor.EditorConfiguration is TextEditorConfiguration textedit)
                 {
                     <TextEditor Configuration="textedit" 
-                                Value="editor as DynamicEditorValue<string>"
                                 OnValuesUpdated="OnEditorChange"></TextEditor>
                 }
 
                 @if (editor.EditorConfiguration is PasswordEditorConfiguration password)
                 {
                     <PasswordEditor Configuration="password" 
-                                    Value="editor as DynamicEditorValue<string>"
                                     OnValuesUpdated="OnEditorChange"></PasswordEditor>
                 }
 
                 @if (editor.EditorConfiguration is CheckBoxEditorConfiguration checkbox)
                 {
                     <Checkbox Configuration="checkbox" 
-                              Value="editor as DynamicEditorValue<bool>"
                               OnValuesUpdated="OnEditorChange"></Checkbox>
                 }
             }
@@ -46,6 +43,11 @@
         get { return this._configuration; }
         set
         {
+            // Ugly workaround
+            // Ohne diese Zeile wird der Setter manchmal neu ausgeführt
+            // und die gespeicherten Werte werden gelöscht
+            if(this.Configuration != null) 
+                return;
             this.Values = new();
             this._configuration = value;
 
@@ -78,8 +80,20 @@
 
     public List<IDynamicEditorValue> Values { get; set; } = new();
 
-    private async Task OnEditorChange(bool idk)
+    private async Task OnEditorChange(OnEditorChangeEventParam idk)
     {
+        var data = this.Values.FirstOrDefault(e => e.Name == idk.Name);
+
+        if (data is DynamicEditorValue<string> asString)
+        {
+            asString.Value = (string)idk.Value;
+        }
+
+        if (data is DynamicEditorValue<bool> asBool)
+        {
+            asBool.Value = (bool) idk.Value;
+        }
+        
         await this.OnValuesChange.InvokeAsync(this.Values);
     }
 

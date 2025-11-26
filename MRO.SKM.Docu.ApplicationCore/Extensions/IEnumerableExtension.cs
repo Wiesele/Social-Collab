@@ -11,4 +11,16 @@ public static class IEnumerableExtension
     {
         return providers.FirstOrDefault(e => e.UUID == language.ProviderId);
     }
+
+    public static ISourceProviderService GetSourceProvider(
+        this IEnumerable<ISourceProviderService> providers, Repository repository)
+    {
+        return providers.First(e => e.UUID == repository.SourceProviderService);
+    }
+    
+    public static ISourceProviderService GetSourceProvider(
+        this IEnumerable<ISourceProviderService> providers, Guid sourceProviderId)
+    {
+        return providers.First(e => e.UUID == sourceProviderId);
+    }
 }

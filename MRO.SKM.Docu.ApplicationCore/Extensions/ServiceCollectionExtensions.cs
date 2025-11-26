@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<SettingService>();
         services.AddScoped<LoaderService>();
         services.AddScoped<RepositoryService>();
+        services.AddScoped<SourceControlService>();
     }
 
     public static void AddSDKResources(this IServiceCollection services)

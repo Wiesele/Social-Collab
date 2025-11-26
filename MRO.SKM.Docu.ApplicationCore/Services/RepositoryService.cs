@@ -16,24 +16,26 @@ public class RepositoryService
     private SettingService SettingService { get; set; }
     private IServiceProvider Services { get; set; }
     private IEnumerable<ILanguageProviderService> LanguagesProviderServices { get; set; }
+    private SourceControlService SourceControlService { get; set; }
 
 
     public RepositoryService(IDatabaseContext database,
         SettingService settingService,
         IServiceProvider services,
-        IEnumerable<ILanguageProviderService> languagesProviderServices)
+        IEnumerable<ILanguageProviderService> languagesProviderServices,
+        SourceControlService sourceControlService)
     {
         this.Database = database;
         this.SettingService = settingService;
         this.Services = services;
         this.LanguagesProviderServices = languagesProviderServices;
+        this.SourceControlService = sourceControlService;
     }
 
     public async Task<Repository> CreateAndClone(string repoName, Guid sourceProvider,
         Dictionary<string, object> sourceProviderConfig)
     {
-        var availableServices = this.Services.GetServices<ISourceProviderService>();
-        var selectedSourceProvider = availableServices.First(e => e.UUID == sourceProvider);
+        var selectedSourceProvider = this.SourceControlService.GetSourceProvider(sourceProvider);
 
         var settings = this.SettingService.GetSettings();
 
@@ -47,12 +49,7 @@ public class RepositoryService
         await this.Database.SaveChangesAsync();
 
 
-        if (!Directory.Exists(repository.Location))
-        {
-            Directory.CreateDirectory(repository.Location);
-        }
-
-        await selectedSourceProvider.CloneRepository(repository);
+    await this.SourceControlService.CloneRepository(repository);
 
         return repository;
     }

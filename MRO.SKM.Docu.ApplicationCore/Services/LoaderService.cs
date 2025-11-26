@@ -21,6 +21,8 @@ public class LoaderService
         }
         
         this.CallBack?.Invoke();
+        
+        await Task.Delay(50);
     }
 
     public void RegisterCallback(Action callback)

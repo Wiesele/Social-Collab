@@ -8,20 +8,28 @@
 
 
 <MudAppBar Elevation="1">
-    <MudText Typo="Typo.h5" Class="ml-3">
-        @(Repository != null ? this.Repository.Name : "")
-    </MudText>
-    <MudTooltip Text="Repository neu laden" Style="margin-left: 25px">
-        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Inherit" OnClick="ReloadRepository"></MudIconButton>
-    </MudTooltip>
-    <MudSpacer/>
-    <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="@Color.Inherit"></MudIconButton>
-    <MudToggleIconButton @bind-Toggled="IsDarkMode"
-                         Icon="@Icons.Material.Filled.DarkMode" Color="@Color.Inherit"
-                         ToggledIcon="@Icons.Material.Filled.LightMode" ToggledColor="@Color.Inherit"/>
+    @if (this.Repository != null)
+    {
+        <MudText Typo="Typo.h5" Class="ml-3">
+            @this.Repository.Name
+        </MudText>
+
+        <MudItem Class="ml-3" Style="max-width: 200px">
+            <GitControls Repository="Repository"></GitControls>
+        </MudItem>
+
+        <MudSpacer/>
+        <MudTooltip Text="Repository neu laden" Class="ml-3">
+            <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Inherit"
+                           OnClick="ReloadRepository"></MudIconButton>
+        </MudTooltip>
+        <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="@Color.Inherit"></MudIconButton>
+        <MudToggleIconButton @bind-Toggled="IsDarkMode"
+                             Icon="@Icons.Material.Filled.DarkMode" Color="@Color.Inherit"
+                             ToggledIcon="@Icons.Material.Filled.LightMode" ToggledColor="@Color.Inherit"/>
+    }
+
 </MudAppBar>
-
-
 
 @code {
     [Parameter] public Repository? Repository { get; set; }
@@ -40,5 +48,6 @@
         await this.loader.ShowLoader("Lade Codestruktur");
         await this.RepositoryService.ReloadRepository(this.Repository);
         this.loader.HideLoader();
-    }       
+    }
+
 }
