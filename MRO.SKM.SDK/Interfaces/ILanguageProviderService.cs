@@ -5,5 +5,5 @@ namespace MRO.SKM.SDK.Interfaces;
 
 public interface ILanguageProviderService: IBaseProviderService
 {
-    List<CodeFile> AnalyzeRepository(Repository repository);
+    Task<List<CodeFile>> AnalyzeRepository(Repository repository);
 }

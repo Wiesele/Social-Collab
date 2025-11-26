@@ -1,5 +1,7 @@
 ﻿@using MRO.SMK.SDK.Models
 @inject IJSRuntime JS
+@inject RepositoryService RepositoryService;
+@inject LoaderService loader;
 
 
 <MudThemeProvider @ref="MudThemeProvider" @bind-IsDarkMode="@IsDarkMode"/>
@@ -9,6 +11,9 @@
     <MudText Typo="Typo.h5" Class="ml-3">
         @(Repository != null ? this.Repository.Name : "")
     </MudText>
+    <MudTooltip Text="Repository neu laden" Style="margin-left: 25px">
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Inherit" OnClick="ReloadRepository"></MudIconButton>
+    </MudTooltip>
     <MudSpacer/>
     <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="@Color.Inherit"></MudIconButton>
     <MudToggleIconButton @bind-Toggled="IsDarkMode"
@@ -30,5 +35,10 @@
         IsDarkMode = !IsDarkMode;
     }
 
-
+    async Task ReloadRepository()
+    {
+        await this.loader.ShowLoader();
+        await this.RepositoryService.ReloadRepository(this.Repository);
+        this.loader.HideLoader();
+    }       
 }

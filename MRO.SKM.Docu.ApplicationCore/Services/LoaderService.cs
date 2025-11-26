@@ -6,27 +6,32 @@ public class LoaderService
 {
     public bool Visible { get; set; } = false;
     public string Text { get; set; } = string.Empty;
-
-    public EventHandler<bool> VisibilityChanged { get; set; }
-    public EventHandler<string> TextChanged { get; set; }
-
-    public void ShowLoader(string text = "")
+    private Action CallBack { get; set; }
+    
+    public async Task ShowLoader(string text = "")
     {
         if (this.Visible == false)
         {
             this.Visible = true;
-            this.VisibilityChanged.Invoke(this, this.Visible);
         }
 
         if (this.Text != text)
         {
             this.Text = text;
-            this.TextChanged.Invoke(this, this.Text);
         }
+        
+        this.CallBack?.Invoke();
     }
 
+    public void RegisterCallback(Action callback)
+    {
+        this.CallBack = callback;
+    }
+    
     public void HideLoader()
     {
         this.Visible = false;
-    }
+        this.CallBack?.Invoke();
+    }       
+
 }
