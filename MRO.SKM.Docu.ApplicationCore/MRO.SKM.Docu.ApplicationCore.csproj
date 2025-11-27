@@ -8,6 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.1" />
+      <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.10" />
@@ -18,15 +20,6 @@
       <ProjectReference Include="..\MRO.SKM.CSharpProvider\MRO.SKM.CSharpProvider.csproj" />
       <ProjectReference Include="..\MRO.SKM.GitProvider\MRO.SKM.GitProvider.csproj" />
       <ProjectReference Include="..\MRO.SKM.SDK\MRO.SKM.SDK.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="Microsoft.AspNetCore.Components">
-        <HintPath>..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\9.0.3\Microsoft.AspNetCore.Components.dll</HintPath>
-      </Reference>
-      <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
-        <HintPath>..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\9.0.3\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
-      </Reference>
     </ItemGroup>
 
 </Project>
