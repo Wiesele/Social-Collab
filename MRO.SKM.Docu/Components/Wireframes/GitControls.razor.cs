@@ -51,10 +51,14 @@ public partial class GitControls : ComponentBase
 
     public async Task FetchData()
     {
+        await this.LoaderService.ShowLoader();
+        
         this.Branches = await this.SourceControlService.ListBranches(this.Repository);
         this.SelectedBranch = this.Branches.FirstOrDefault(e => e.IsCurrentlyActive);
         
         this.StateHasChanged();
+        
+        this.LoaderService.HideLoader();
     }
 
     public async Task UpdateRepositoryClick()

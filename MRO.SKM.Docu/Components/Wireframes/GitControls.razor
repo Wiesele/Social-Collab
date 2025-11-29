@@ -8,6 +8,7 @@
                  StartIcon="@Icons.Material.Filled.CallSplit"
                  EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
             <MudMenuItem Icon="@Icons.Material.Filled.ArrowDownward" OnClick="async () => await this.UpdateRepositoryClick()">Pull</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Refresh" OnClick="async () => await this.FetchData()">Fetch</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Filled.ArrowUpward">Push</MudMenuItem>
             <MudDivider></MudDivider>
             @foreach (var item in Branches.OrderBy(e => e.DisplayName))
