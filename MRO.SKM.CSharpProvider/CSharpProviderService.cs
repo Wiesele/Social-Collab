@@ -1,18 +1,19 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MRO.SKM.SDk.Extensions;
 using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models;
 using MRO.SMK.SDK.Models;
 
 namespace MRO.SKM.CSharpProvider;
 
-public class CSharpProviderService: ILanguageProviderService
+public class CSharpProviderService : ILanguageProviderService
 {
     public Guid UUID { get; } = new Guid("20C52B1F-9CB3-4D64-AC51-F17E0FA10579");
     public string DisplayName { get; } = "C#";
-    
-    
+
+
     public async Task<List<CodeFile>> AnalyzeRepository(Repository repository)
     {
         var files = Directory.GetFiles(repository.Location, "*.cs", SearchOption.AllDirectories);
@@ -37,14 +38,14 @@ public class CSharpProviderService: ILanguageProviderService
             Key = path,
             Classes = this.ExtractClasses(await File.ReadAllTextAsync(path)),
         };
-        
+
         return codeFile;
     }
 
     private List<Class> ExtractClasses(string sourceCode)
     {
         var data = new List<Class>();
-        
+
         var tree = CSharpSyntaxTree.ParseText(sourceCode,
             new CSharpParseOptions(LanguageVersion.Preview));
         var root = (CompilationUnitSyntax)tree.GetRoot();
@@ -55,6 +56,8 @@ public class CSharpProviderService: ILanguageProviderService
 
         foreach (var item in classes)
         {
+            var xmlDoc = this.GetXmlDoc(item);
+
             var nameSpaceName = GetFullNamespace(item);
             var code = text.ToString(item.FullSpan);
             var key = item.Identifier.ToString();
@@ -64,14 +67,32 @@ public class CSharpProviderService: ILanguageProviderService
             {
                 Name = name,
                 Key = nameSpaceName + "." + name,
-                Body = code,
-                Methods = this.ExtractMethod(code)
+                Body = xmlDoc + code,
+                Methods = this.ExtractMethod(code),
+                Comment = xmlDoc
             };
-            
+
             data.Add(itemData);
         }
-        
+
         return data;
+    }
+
+    private string? GetXmlDoc(SyntaxNode node)
+    {
+        var docTrivia = node.GetLeadingTrivia()
+            .Select(t => t.GetStructure())
+            .OfType<DocumentationCommentTriviaSyntax>()
+            .FirstOrDefault();
+
+        string? xmlDoc = docTrivia?.ToFullString() ?? "";
+
+        if (xmlDoc.IsNullOrWhiteSpace())
+        {
+            xmlDoc = null;
+        }
+
+        return xmlDoc;
     }
 
     private List<Method> ExtractMethod(string sourceCode, bool includeLocalFunctions = false)
@@ -88,6 +109,8 @@ public class CSharpProviderService: ILanguageProviderService
 
         foreach (var m in methods)
         {
+            var xmlDoc = this.GetXmlDoc(m);
+
             var code = text.ToString(m.FullSpan);
             var key = BuildKey(m);
 
@@ -98,7 +121,8 @@ public class CSharpProviderService: ILanguageProviderService
             {
                 Name = $"{m.Identifier.Text}({parms})",
                 Key = key,
-                Body = code,
+                Body = xmlDoc + code,
+                Comment = xmlDoc
             });
         }
 
@@ -137,7 +161,7 @@ public class CSharpProviderService: ILanguageProviderService
         var parms = string.Join(",", lf.ParameterList.Parameters.Select(p => p.Type?.ToString() ?? "?"));
         return $"{containerKey}::local {lf.Identifier.Text}({parms})";
     }
-    
+
     private string GetFullNamespace(SyntaxNode node)
     {
         var namespaces = new List<string>();

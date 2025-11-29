@@ -167,6 +167,7 @@ public class RepositoryService
                 inDb.Name = classModel.Name;
                 inDb.Key = classModel.Key;
                 inDb.Body = classModel.Body;
+                inDb.Comment = classModel.Comment;
             }
             
             await this.Database.SaveChangesAsync();
@@ -204,6 +205,7 @@ public class RepositoryService
                 inDb.Name = method.Name;
                 inDb.Key = method.Key;
                 inDb.Body = method.Body;
+                inDb.Comment = method.Comment;
             }
             
             await this.Database.SaveChangesAsync();
