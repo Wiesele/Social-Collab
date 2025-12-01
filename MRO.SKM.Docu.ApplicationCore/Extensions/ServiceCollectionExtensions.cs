@@ -14,6 +14,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<LoaderService>();
         services.AddScoped<RepositoryService>();
         services.AddScoped<SourceControlService>();
+        services.AddScoped<CodeService>();
     }
 
     public static void AddSDKResources(this IServiceCollection services)

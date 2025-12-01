@@ -1,0 +1,127 @@
+﻿@using BlazorMonaco.Editor
+
+<MudGrid Spacing="15" Style="height: 100%">
+    <MudItem md="6" Style="height: 100%">
+        <MudGrid>
+            <MudItem md="12">
+                <MudCard Class="pb-7">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Outline</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudGrid>
+                            <MudItem md="12">
+                                <MudTextField For="() => Model.Summary"
+                                              @bind-Value="@Model.Summary"
+                                              Label="Zusammenfassung"
+                                              MaxLines="128"
+                                              AutoGrow="true"></MudTextField>
+                            </MudItem>
+
+                            @if (Comment.HasReturnValue)
+                            {
+                                <MudItem md="12">
+                                    <MudTextField For="() => Model.Returns"
+                                                  @bind-Value="@Model.Returns"
+                                                  Label="Rückgabewert"
+                                                  MaxLines="128"
+                                                  AutoGrow="true"></MudTextField>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            @if (Comment.HasParameters)
+            {
+                <MudItem md="12">
+                    <MudCard Class="pb-7">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Parameter</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                @foreach (var param in Model.Params)
+                                {
+                                    <MudItem md="12">
+                                        <MudTextField For="() => param.Text"
+                                                      @bind-Value="@param.Text"
+                                                      Label="@param.DisplayName"
+                                                      MaxLines="128"
+                                                      AutoGrow="true"></MudTextField>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+
+            @if (Comment.CanThrowException)
+            {
+                <MudItem md="12">
+                    <MudCard Class="pb-7">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudGrid>
+                                    <MudItem>
+                                        <MudText Typo="Typo.h6">Exceptions</MudText>
+                                    </MudItem>
+                                    <MudItem>
+                                        <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="AddException"></MudIconButton>
+                                    </MudItem>
+                                </MudGrid>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudGrid>
+                                @foreach (var param in Model.Exceptions)
+                                {
+                                    <MudItem md="7">
+                                        <MudTextField For="() => param.Text"
+                                                      @bind-Value="@param.Text"
+                                                      Label="@("Exception " + (Model.Exceptions.IndexOf(param) + 1) + " Text")"
+                                                      MaxLines="128"
+                                                      AutoGrow="true"></MudTextField>
+                                    </MudItem>
+                                    <MudItem md="4">
+                                        <MudTextField For="() => param.Ref"
+                                                      @bind-Value="@param.Ref"
+                                                      Label="@("Exception " + (Model.Exceptions.IndexOf(param) + 1) + " Referenz")"></MudTextField>
+                                    </MudItem>
+                                    <MudItem md="1">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="e => Model.Exceptions.RemoveAt(Model.Exceptions.IndexOf(param))"></MudIconButton>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudItem>
+    <MudItem md="6" Style="height: 100%">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mb-2" OnClick="ToggleDisplayedCode">
+            @if (DisplayingMethod)
+            {
+                <MudText>Datei anzeigen</MudText>
+            }
+            else
+            {
+                <MudText>Element anzeigen</MudText>
+            }
+        </MudButton>
+        
+        <StandaloneCodeEditor @ref="Editor" Id="code-editor-comment" CssClass="code-editor"
+                              ConstructionOptions="EditorConstructionOptions"></StandaloneCodeEditor>
+    </MudItem>
+</MudGrid>
+
+@code {
+
+}

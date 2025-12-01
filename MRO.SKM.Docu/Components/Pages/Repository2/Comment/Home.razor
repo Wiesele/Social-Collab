@@ -1,16 +1,70 @@
 ﻿@page "/repository/{id}/comment"
+@using MRO.SKM.SDK.Interfaces
+@using MRO.SKM.SDK.Models
 @inherits BaseRepoPage
 
 <PageTitle>Kommentieren</PageTitle>
 <div style="height: 100%; position: fixed; width: -webkit-fill-available" id="wrapper-div">
-    <MudGrid Spacing="5" Style="height: 100%">
+    <MudGrid Spacing="5" Style="height: 93%">
         <MudItem xs="3" Style="height: 100%">
-            <MudPaper Style="height: 95%; overflow: auto;">
+            <MudPaper Style="height: 100%; overflow: auto;">
                 <FileList BasePath="@Repository.Location" FileSelected="@FileSelected"></FileList>
             </MudPaper>
         </MudItem>
-        <MudItem xs="9" Style="height: 100%">
-            Content
+        <MudItem xs="9" Style="height: 100%;" Class="pr-6">
+
+            @if (SelectedFile == null)
+            {
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>Datei auswählen om Objekte anzuzeigen</CardHeaderContent>
+                    </MudCardHeader>
+                </MudCard>
+            }
+            else
+            {
+                <MudTable Items="Classes" 
+                          Style="overflow: auto; height: 100%"
+                          Hover="true" 
+                          OnRowClick="(TableRowClickEventArgs<Class> e) => OpenCommentDialog(e.Item)">
+                    <HeaderContent>
+                            <MudTh colspan="2">Objekte in Datei @Path.GetFileName(SelectedFile.DisplayName)</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd Style="width: 0">
+                            <MudIcon Icon="@Icons.Material.Filled.Code"></MudIcon>
+                        </MudTd>
+                        <MudTd DataLabel="Name">@context.Name</MudTd>
+                    </RowTemplate>
+                    <ChildRowContent>
+                        <MudTr>
+                            <td colspan="2">
+                                <MudCard Elevation="0">
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            Methoden in @context.Name
+                                        </CardHeaderContent>
+                                    </MudCardHeader>
+                                    <MudCardContent>
+                                        <MudTable Items="@context.Methods"
+                                                  T="Method" 
+                                                  Context="childContext"
+                                                  Hover="true"
+                                                  OnRowClick="(TableRowClickEventArgs<Method> e) => OpenCommentDialog(e.Item)">
+                                            <RowTemplate>
+                                                <MudTd Style="width: 0">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Code"></MudIcon>
+                                                </MudTd>
+                                                <MudTd DataLabel="Methode">@childContext.Name</MudTd>
+                                            </RowTemplate>
+                                        </MudTable>
+                                    </MudCardContent>
+                                </MudCard>
+                            </td>
+                        </MudTr>
+                    </ChildRowContent>
+                </MudTable>
+            }
         </MudItem>
     </MudGrid>
 </div>

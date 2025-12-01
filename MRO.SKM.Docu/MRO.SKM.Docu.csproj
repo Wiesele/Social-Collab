@@ -29,6 +29,8 @@
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Components\Pages\Repository2\LanguageSettings\AddLanguageDialog.razor" />
     <_ContentIncludedByDefault Remove="Components\Pages\Repository2\LanguageSettings\Home.razor" />
+    <_ContentIncludedByDefault Remove="Models\CommentEditor\CommentEditorComponent.razor" />
+    <_ContentIncludedByDefault Remove="Models\CommentEditor\CommentEditorDialog.razor" />
   </ItemGroup>
 
   <ItemGroup>

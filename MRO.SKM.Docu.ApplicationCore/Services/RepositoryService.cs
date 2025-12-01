@@ -168,6 +168,9 @@ public class RepositoryService
                 inDb.Key = classModel.Key;
                 inDb.Body = classModel.Body;
                 inDb.Comment = classModel.Comment;
+                inDb.CanThrowException = classModel.CanThrowException;
+                inDb.HasParameters = classModel.HasParameters;
+                inDb.HasReturnValue = classModel.HasReturnValue;
             }
             
             await this.Database.SaveChangesAsync();
@@ -206,6 +209,9 @@ public class RepositoryService
                 inDb.Key = method.Key;
                 inDb.Body = method.Body;
                 inDb.Comment = method.Comment;
+                inDb.CanThrowException = method.CanThrowException;
+                inDb.HasParameters = method.HasParameters;
+                inDb.HasReturnValue = method.HasReturnValue;
             }
             
             await this.Database.SaveChangesAsync();
@@ -272,5 +278,10 @@ public class RepositoryService
         
         this.Database.Methods.RemoveRange(toDelete);
         await this.Database.SaveChangesAsync();
+    }
+
+    public CodeFile? GetCodeFile(string key)
+    {
+        return this.Database.CodeFiles.FirstOrDefault(e => e.Key == key);
     }
 }

@@ -5,6 +5,11 @@ namespace MRO.SKM.SDK.Models;
 
 public class CodeFile: CodeObject
 {
-    public List<Class> Classes { get; set; } = new List<Class>();
+    public CodeFile()
+    {
+        this.Classes = new();
+    }
+    
+    public List<Class> Classes { get; set; }
     public Repository Repository { get; set; }
 }

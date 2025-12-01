@@ -1,0 +1,29 @@
+﻿@using MRO.SKM.SDK.Interfaces
+@using MRO.SKM.SDK.Models
+<MudDialog>
+    <DialogContent>
+        <CommentEditorComponent 
+            Comment="Item" 
+            LanguageProvider="LanguageProviderService"
+            File="File"></CommentEditorComponent>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">OK</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+    
+    [Parameter]
+    public ICommentable Item { get; set; }
+    [Parameter]
+    public ILanguageProviderService LanguageProviderService { get; set; }
+    [Parameter]
+    public CodeFile File { get; set; }
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}
