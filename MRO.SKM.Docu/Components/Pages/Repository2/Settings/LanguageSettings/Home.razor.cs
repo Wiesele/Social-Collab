@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MRO.SKM.Docu.Models;
 using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models;
 using MRO.SMK.Docu.ApplicationCore.Services;
@@ -7,21 +8,15 @@ using MudBlazor;
 
 namespace MRO.SKM.Docu.Components.Pages.Repository2.Settings.LanguageSettings;
 
-public partial class Home : ComponentBase
+public partial class Home : BaseRepoPage
 {
-    [Parameter]
-    public string Id { get; set; }
-    
     private List<ILanguageProviderService> LanguageProviderServices { get; set; }
     private IDialogService  DialogService { get; set; }
-    private RepositoryService RepositoryService { get; set; }
-    
-    private Repository Repository { get; set; }
     private List<RepositoryLanguage> Languages { get; set; } = new();
 
     public Home(IEnumerable<ILanguageProviderService> languageProviderServices, 
         IDialogService  dialogService, 
-        RepositoryService repositoryService)
+        RepositoryService repositoryService): base(repositoryService)
     {
         this.LanguageProviderServices = languageProviderServices.ToList();
         this.DialogService = dialogService;
@@ -31,7 +26,6 @@ public partial class Home : ComponentBase
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        this.Repository = this.RepositoryService.GetById(this.Id);
         this.Languages = this.RepositoryService.ListLanguages(this.Repository);
     }       
 

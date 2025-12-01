@@ -11,27 +11,21 @@ using MRO.SMK.SDK.Models;
 
 namespace MRO.SKM.Docu.Components.Pages.Repository2.Code;
 
-public partial class Home : ComponentBase
+public partial class Home : BaseRepoPage
 {
-    private RepositoryService RepositoryService { get; set; }
     private IJSRuntime JSRuntime { get; set; }
 
-    [Parameter] public string Id { get; set; }
-
-    private Repository Repository { get; set; }
     private FileListItem SelectedFile { get; set; }
     private string SelectedFileContent { get; set; }
     private StandaloneCodeEditor? Editor;
 
-    public Home(RepositoryService repositoryService, IJSRuntime jsRuntime)
+    public Home(RepositoryService repositoryService, IJSRuntime jsRuntime):base(repositoryService)
     {
         this.JSRuntime = jsRuntime;
-        this.RepositoryService = repositoryService;
     }
 
     protected override void OnInitialized()
     {
-        this.Repository = this.RepositoryService.GetById(this.Id);
         base.OnInitialized();
     }
 
