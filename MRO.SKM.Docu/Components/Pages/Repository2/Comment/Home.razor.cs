@@ -32,14 +32,7 @@ public partial class Home : BaseRepoPage
     }
 
 
-    /// <summary>
-    ///  Das ist ein Ref.
-    /// </summary>
-    /// <param name="obj">Bla Bla</param>
-    /// <exception cref="member">description</exception>
-    /// <exception cref="wdawd">description</exception>
-    /// <exception cref="meawdawdmber">description</exception>
-    /// <returns>description</returns>
+  
     private async Task FileSelected(FileListItem obj)
     {
         this.SelectedFile = obj;

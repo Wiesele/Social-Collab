@@ -100,4 +100,9 @@ public partial class CommentEditorComponent : ComponentBase
             this.DisplayingMethod = true;
         }
     }
+
+    public async Task SaveChanges()
+    {
+        await this.LanguageProvider.AddTriviaToMethod(this.Comment.Key, this.File.Key, this.Model);
+    }
 }

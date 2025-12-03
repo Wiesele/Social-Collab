@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MRO.SKM.CSharpProvider.Extensions;
 using MRO.SKM.SDk.Extensions;
 using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models;
@@ -15,6 +16,7 @@ public class CSharpProviderService : ILanguageProviderService
     public string DisplayName { get; } = "C#";
 
     public string FileExtension { get; } = ".cs";
+
 
     public async Task<List<CodeFile>> AnalyzeRepository(Repository repository)
     {
@@ -60,7 +62,6 @@ public class CSharpProviderService : ILanguageProviderService
         {
             var xmlDoc = this.GetXmlDoc(item);
 
-            var nameSpaceName = GetFullNamespace(item);
             var code = text.ToString(item.FullSpan);
             var key = item.Identifier.ToString();
             var name = item.FirstAncestorOrSelf<TypeDeclarationSyntax>()?.Identifier.Text;
@@ -68,8 +69,8 @@ public class CSharpProviderService : ILanguageProviderService
             var itemData = new Class()
             {
                 Name = name,
-                Key = nameSpaceName + "." + name,
-                Body = xmlDoc + code,
+                Key = item.BuildKey(),
+                Body = code,
                 Methods = this.ExtractMethod(code),
                 Comment = xmlDoc,
                 CanThrowException = false,
@@ -113,20 +114,20 @@ public class CSharpProviderService : ILanguageProviderService
 
         foreach (var method in methods)
         {
-            var key = this.BuildKey(method);
+            var key = method.BuildKey();
 
             if (key != methodKey)
             {
                 continue;
             }
-            
+
             if (method != null && method.ParameterList.Parameters.Any())
             {
                 var data = new List<CommentParameter>();
                 foreach (var item in method.ParameterList.Parameters)
                 {
                     var paramComment = new CommentParameter();
-                    paramComment.DisplayName = item.Type.ToString() + " " +  item.Identifier.ToString();
+                    paramComment.DisplayName = item.Type.ToString() + " " + item.Identifier.ToString();
                     paramComment.Ref = item.Identifier.ToString();
                     data.Add(paramComment);
                 }
@@ -164,7 +165,7 @@ public class CSharpProviderService : ILanguageProviderService
             var xmlDoc = this.GetXmlDoc(m);
 
             var code = text.ToString(m.FullSpan);
-            var key = BuildKey(m);
+            var key = m.BuildKey();
 
             var parms = string.Join(",", m.ParameterList.Parameters.Select(p => p.Type?.ToString() ?? "?"));
 
@@ -174,7 +175,7 @@ public class CSharpProviderService : ILanguageProviderService
             {
                 Name = $"{m.Identifier.Text}({parms})",
                 Key = key,
-                Body = xmlDoc + code,
+                Body = code,
                 Comment = xmlDoc,
                 CanThrowException = true,
                 HasParameters = hasParams,
@@ -188,7 +189,7 @@ public class CSharpProviderService : ILanguageProviderService
             var xmlDoc = this.GetXmlDoc(p);
 
             var code = text.ToString(p.FullSpan);
-            var key = BuildKey(p);
+            var key = p.BuildKey();
 
             results.Add(new()
             {
@@ -209,7 +210,7 @@ public class CSharpProviderService : ILanguageProviderService
             foreach (var lf in localFns)
             {
                 var code = text.ToString(lf.FullSpan);
-                var key = BuildKey(lf);
+                var key = lf.BuildKey();
                 results.Add(new()
                 {
                     Name = Guid.NewGuid().ToString(),
@@ -222,37 +223,80 @@ public class CSharpProviderService : ILanguageProviderService
         return results;
     }
 
-    private string BuildKey(MethodDeclarationSyntax m)
+
+
+    public async Task AddTriviaToMethod(string methodKey, string fileName, Comment comment)
     {
-        var type = m.FirstAncestorOrSelf<TypeDeclarationSyntax>()?.Identifier.Text ?? "";
-        var parms = string.Join(",", m.ParameterList.Parameters.Select(p => p.Type?.ToString() ?? "?"));
-        return $"{type}.{m.Identifier.Text}({parms})";
+        if (!File.Exists(fileName))
+            throw new FileNotFoundException("Datei wurde nicht gefunden.", fileName);
+
+        var sourceCode = await File.ReadAllTextAsync(fileName);
+
+
+        var tree = CSharpSyntaxTree.ParseText(sourceCode,
+            new CSharpParseOptions(LanguageVersion.Preview));
+
+        var root = (CompilationUnitSyntax)await tree.GetRootAsync();
+
+        var method = root.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .FirstOrDefault(m => m.BuildKey() == methodKey);
+
+
+        if (method != null)
+        {
+            await this.AddTriviaToMethod(root, method, fileName, comment);
+            return;
+        }
+        
+        var classElement = root.DescendantNodes()
+            .OfType<ClassDeclarationSyntax>()
+            .FirstOrDefault(m => m.BuildKey() == methodKey);
+
+        if (classElement != null)
+        {
+            await this.AddTriviaToClass(root, classElement, fileName, comment);
+            return;
+        }
+
+        throw new FileNotFoundException("Element " + methodKey + " wurde nicht gefunden.", fileName);
+    }
+    
+    private async Task AddTriviaToClass(CompilationUnitSyntax root, ClassDeclarationSyntax method, string fileName, Comment comment)
+    {
+        var methodIndent = method.GetLeadingTrivia()
+            .ToFullString()
+            .Split('\n')
+            .LastOrDefault() ?? "";
+        
+        var docText = comment.GetTrivia(methodIndent);
+        
+        
+        var newLeadingTrivia = SyntaxFactory.ParseLeadingTrivia(docText);
+
+        var newMethod = method.WithLeadingTrivia(newLeadingTrivia);
+
+        var newRoot = root.ReplaceNode(method, newMethod);
+
+        await File.WriteAllTextAsync(fileName, newRoot.ToFullString());
     }
 
-    private string BuildKey(PropertyDeclarationSyntax m)
+    private async Task AddTriviaToMethod(CompilationUnitSyntax root, MethodDeclarationSyntax method, string fileName, Comment comment)
     {
-        var type = m.FirstAncestorOrSelf<TypeDeclarationSyntax>()?.Identifier.Text ?? "";
-        return $"{type}.{m.Identifier.Text}";
-    }
+        var methodIndent = method.GetLeadingTrivia()
+            .ToFullString()
+            .Split('\n')
+            .LastOrDefault() ?? "";
+        
+        var docText = comment.GetTrivia(methodIndent);
+        
+        
+        var newLeadingTrivia = SyntaxFactory.ParseLeadingTrivia(docText);
 
+        var newMethod = method.WithLeadingTrivia(newLeadingTrivia);
 
-    private string BuildKey(LocalFunctionStatementSyntax lf)
-    {
-        var container = lf.FirstAncestorOrSelf<MethodDeclarationSyntax>();
-        var containerKey = container != null ? BuildKey(container) : "<top>";
-        var parms = string.Join(",", lf.ParameterList.Parameters.Select(p => p.Type?.ToString() ?? "?"));
-        return $"{containerKey}::local {lf.Identifier.Text}({parms})";
-    }
+        var newRoot = root.ReplaceNode(method, newMethod);
 
-    private string GetFullNamespace(SyntaxNode node)
-    {
-        var namespaces = new List<string>();
-
-        foreach (var ns in node.Ancestors().OfType<BaseNamespaceDeclarationSyntax>())
-            namespaces.Add(ns.Name.ToString());
-
-        namespaces.Reverse(); // äußester Namespace zuerst
-
-        return string.Join(".", namespaces);
+        await File.WriteAllTextAsync(fileName, newRoot.ToFullString());
     }
 }

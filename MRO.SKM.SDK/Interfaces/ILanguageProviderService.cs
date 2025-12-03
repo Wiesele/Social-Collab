@@ -9,4 +9,5 @@ public interface ILanguageProviderService: IBaseProviderService
     Task<List<CodeFile>> AnalyzeRepository(Repository repository);
     List<CommentParameter> GetParameterComments(string methodKey, string fileName);
     string FileExtension { get; }
+    Task AddTriviaToMethod(string methodKey, string fileName, Comment comment);
 }

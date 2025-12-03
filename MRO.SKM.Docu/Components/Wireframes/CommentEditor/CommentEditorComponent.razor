@@ -116,6 +116,8 @@
                 <MudText>Element anzeigen</MudText>
             }
         </MudButton>
+    
+        <MudButton OnClick="(async () => await this.SaveChanges())" Variant="Variant.Filled" Color="Color.Primary" >Speichern</MudButton>
         
         <StandaloneCodeEditor @ref="Editor" Id="code-editor-comment" CssClass="code-editor"
                               ConstructionOptions="EditorConstructionOptions"></StandaloneCodeEditor>
