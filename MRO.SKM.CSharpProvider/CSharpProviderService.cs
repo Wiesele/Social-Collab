@@ -101,50 +101,6 @@ public class CSharpProviderService : ILanguageProviderService
         return xmlDoc;
     }
 
-    public List<CommentParameter> GetParameterComments(string methodKey, string fileName)
-    {
-        var sourceCode = File.ReadAllText(fileName);
-        var tree = CSharpSyntaxTree.ParseText(sourceCode,
-            new CSharpParseOptions(LanguageVersion.Preview));
-
-        var root = (CompilationUnitSyntax)tree.GetRoot();
-
-        var methods = root.DescendantNodes()
-            .OfType<MethodDeclarationSyntax>();
-
-        foreach (var method in methods)
-        {
-            var key = method.BuildKey();
-
-            if (key != methodKey)
-            {
-                continue;
-            }
-
-            if (method != null && method.ParameterList.Parameters.Any())
-            {
-                var data = new List<CommentParameter>();
-                foreach (var item in method.ParameterList.Parameters)
-                {
-                    var paramComment = new CommentParameter();
-                    paramComment.DisplayName = item.Type.ToString() + " " + item.Identifier.ToString();
-                    paramComment.Ref = item.Identifier.ToString();
-                    data.Add(paramComment);
-                }
-
-                return data;
-            }
-            else
-            {
-                return new();
-            }
-        }
-
-
-        return new();
-    }
-
-
     private List<Method> ExtractMethod(string sourceCode, bool includeLocalFunctions = false)
     {
         var tree = CSharpSyntaxTree.ParseText(sourceCode,
@@ -180,7 +136,7 @@ public class CSharpProviderService : ILanguageProviderService
                 CanThrowException = true,
                 HasParameters = hasParams,
                 HasReturnValue = m.ReturnType is not PredefinedTypeSyntax predefined ||
-                                 predefined.Keyword.Kind() != SyntaxKind.VoidKeyword
+                                 predefined.Keyword.IsKind(SyntaxKind.VoidKeyword)
             });
         }
 
@@ -224,7 +180,6 @@ public class CSharpProviderService : ILanguageProviderService
     }
 
 
-
     public async Task AddTriviaToMethod(string methodKey, string fileName, Comment comment)
     {
         if (!File.Exists(fileName))
@@ -248,7 +203,7 @@ public class CSharpProviderService : ILanguageProviderService
             await this.AddTriviaToMethod(root, method, fileName, comment);
             return;
         }
-        
+
         var classElement = root.DescendantNodes()
             .OfType<ClassDeclarationSyntax>()
             .FirstOrDefault(m => m.BuildKey() == methodKey);
@@ -261,17 +216,58 @@ public class CSharpProviderService : ILanguageProviderService
 
         throw new FileNotFoundException("Element " + methodKey + " wurde nicht gefunden.", fileName);
     }
-    
-    private async Task AddTriviaToClass(CompilationUnitSyntax root, ClassDeclarationSyntax method, string fileName, Comment comment)
+
+    public async Task<string> GetObjectBody(string methodKey, string fileName)
+    {
+        if (!File.Exists(fileName))
+            throw new FileNotFoundException("Datei wurde nicht gefunden.", fileName);
+
+        var sourceCode = await File.ReadAllTextAsync(fileName);
+
+
+        var tree = CSharpSyntaxTree.ParseText(sourceCode,
+            new CSharpParseOptions(LanguageVersion.Preview));
+
+        var root = (CompilationUnitSyntax)await tree.GetRootAsync();
+
+        var text = tree.GetText();
+
+        var method = root.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .FirstOrDefault(m => m.BuildKey() == methodKey);
+
+
+        if (method != null)
+        {
+            var code = text.ToString(method.FullSpan);
+            return code;
+        }
+
+        var classElement = root.DescendantNodes()
+            .OfType<ClassDeclarationSyntax>()
+            .FirstOrDefault(m => m.BuildKey() == methodKey);
+
+        if (classElement != null)
+        {
+            var code = text.ToString(classElement.FullSpan);
+            return code;
+        }
+
+        throw new FileNotFoundException("Element " + methodKey + " wurde nicht gefunden.", fileName);
+    }
+
+
+    private async Task AddTriviaToClass(CompilationUnitSyntax root, ClassDeclarationSyntax method, string fileName,
+        Comment comment)
     {
         var methodIndent = method.GetLeadingTrivia()
             .ToFullString()
             .Split('\n')
             .LastOrDefault() ?? "";
-        
+
         var docText = comment.GetTrivia(methodIndent);
-        
-        
+
+
         var newLeadingTrivia = SyntaxFactory.ParseLeadingTrivia(docText);
 
         var newMethod = method.WithLeadingTrivia(newLeadingTrivia);
@@ -281,16 +277,17 @@ public class CSharpProviderService : ILanguageProviderService
         await File.WriteAllTextAsync(fileName, newRoot.ToFullString());
     }
 
-    private async Task AddTriviaToMethod(CompilationUnitSyntax root, MethodDeclarationSyntax method, string fileName, Comment comment)
+    private async Task AddTriviaToMethod(CompilationUnitSyntax root, MethodDeclarationSyntax method, string fileName,
+        Comment comment)
     {
         var methodIndent = method.GetLeadingTrivia()
             .ToFullString()
             .Split('\n')
             .LastOrDefault() ?? "";
-        
+
         var docText = comment.GetTrivia(methodIndent);
-        
-        
+
+
         var newLeadingTrivia = SyntaxFactory.ParseLeadingTrivia(docText);
 
         var newMethod = method.WithLeadingTrivia(newLeadingTrivia);
@@ -298,5 +295,119 @@ public class CSharpProviderService : ILanguageProviderService
         var newRoot = root.ReplaceNode(method, newMethod);
 
         await File.WriteAllTextAsync(fileName, newRoot.ToFullString());
+    }
+
+
+    private async Task<SyntaxTriviaList> GetXmlDoc(string methodKey, string fileName)
+    {
+        if (!File.Exists(fileName))
+            throw new FileNotFoundException("Datei wurde nicht gefunden.", fileName);
+
+        var sourceCode = await File.ReadAllTextAsync(fileName);
+
+
+        var tree = CSharpSyntaxTree.ParseText(sourceCode,
+            new CSharpParseOptions(LanguageVersion.Preview));
+
+        var root = (CompilationUnitSyntax)await tree.GetRootAsync();
+
+        var method = root.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .FirstOrDefault(m => m.BuildKey() == methodKey);
+
+
+        if (method != null)
+        {
+            return method.GetLeadingTrivia();
+        }
+
+        var classElement = root.DescendantNodes()
+            .OfType<ClassDeclarationSyntax>()
+            .FirstOrDefault(m => m.BuildKey() == methodKey);
+
+        if (classElement != null)
+        {
+            return classElement.GetLeadingTrivia();
+        }
+
+        throw new FileNotFoundException("Element " + methodKey + " wurde nicht gefunden.", fileName);
+    }
+
+    public async Task<Comment> AnalyzeComment(string methodKey, string fileName)
+    {
+        var trivia = await GetXmlDoc(methodKey, fileName);
+
+        var docTirvia = trivia.Select(t => t.GetStructure())
+            .OfType<DocumentationCommentTriviaSyntax>()
+            .FirstOrDefault();
+
+        if (docTirvia == null)
+            return new();
+
+        var paramsInCode = await this.GetParameterComments(methodKey, fileName);
+        var paramsInDoc = docTirvia.GetParams();
+
+        foreach (var param in paramsInCode)
+        {
+            var paramInDoc = paramsInDoc.FirstOrDefault(e => e.Ref == param.Ref);
+
+            if (paramInDoc != null)
+            {
+                param.Text = paramInDoc.Text;
+            }
+        }
+
+        var doc = new Comment()
+        {
+            Summary = docTirvia.GetElementText("summary"),
+            Returns = docTirvia.GetElementText("returns"),
+            Params = paramsInCode,
+            Exceptions = docTirvia.GetExceptions().ToList()
+        };
+
+        return doc;
+    }
+
+    public async Task<List<CommentParameter>> GetParameterComments(string methodKey, string fileName)
+    {
+        var sourceCode = await File.ReadAllTextAsync(fileName);
+        var tree = CSharpSyntaxTree.ParseText(sourceCode,
+            new CSharpParseOptions(LanguageVersion.Preview));
+
+        var root = (CompilationUnitSyntax)await tree.GetRootAsync();
+
+        var methods = root.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>();
+
+        foreach (var method in methods)
+        {
+            var key = method.BuildKey();
+
+            if (key != methodKey)
+            {
+                continue;
+            }
+
+            if (method != null && method.ParameterList.Parameters.Any())
+            {
+                var data = new List<CommentParameter>();
+                foreach (var item in method.ParameterList.Parameters)
+                {
+                    var paramComment = new CommentParameter();
+                    paramComment.DisplayName = item.Type.ToString() + " " + item.Identifier.ToString();
+                    paramComment.Ref = item.Identifier.ToString();
+                    data.Add(paramComment);
+                }
+
+                return data;
+            }
+            else
+            {
+                return new();
+            }
+        }
+
+
+        return new();
     }
 }

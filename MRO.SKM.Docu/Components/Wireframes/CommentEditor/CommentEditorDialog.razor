@@ -5,12 +5,9 @@
         <CommentEditorComponent 
             Comment="Item" 
             LanguageProvider="LanguageProviderService"
-            File="File"></CommentEditorComponent>
+            File="File"
+            CommentEdited="CommentEdited"></CommentEditorComponent>
     </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">OK</MudButton>
-    </DialogActions>
 </MudDialog>
 
 @code {
@@ -23,7 +20,9 @@
     public ILanguageProviderService LanguageProviderService { get; set; }
     [Parameter]
     public CodeFile File { get; set; }
-    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
 
-    private void Cancel() => MudDialog.Cancel();
+    private void CommentEdited(bool obj)
+    {
+        this.MudDialog.Close();
+    }
 }

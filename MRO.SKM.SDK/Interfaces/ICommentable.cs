@@ -11,6 +11,7 @@
 /// <returns>description</returns>
 public interface ICommentable
 {
+    string Name { get; set; }
     string Key { get; set; }
     string? Comment { get; set; }
     string? Body { get; set; }

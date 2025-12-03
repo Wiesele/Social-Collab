@@ -1,6 +1,7 @@
 using MRO.SKM.Docu.Components;
 using MRO.SKM.Docu.Infrastructure;
 using MRO.SMK.Docu.ApplicationCore.Extensions;
+using MudBlazor;
 using MudBlazor.Services;
 
 namespace MRO.SKM.Docu
@@ -18,7 +19,10 @@ namespace MRO.SKM.Docu
             builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("debug.Db"));
             builder.Services.AddApplicationCore();
 
-            builder.Services.AddMudServices();
+            builder.Services.AddMudServices(config =>
+            {
+                config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
+            });
             
             builder.Services.AddSDKResources();
             builder.Services.AddHttpContextAccessor();

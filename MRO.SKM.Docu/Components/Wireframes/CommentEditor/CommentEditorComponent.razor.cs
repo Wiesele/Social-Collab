@@ -2,15 +2,19 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using MRO.SKM.Docu.Components.Wireframes.SimpleDialogs;
 using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models;
 using MRO.SKM.SDK.Models.Comments;
+using MudBlazor;
 
 namespace MRO.SKM.Docu.Components.Wireframes.CommentEditor;
 
 public partial class CommentEditorComponent : ComponentBase
 {
     private IJSRuntime JSRuntime { get; set; }
+    private IDialogService DialogService { get; set; }
+    private ISnackbar Snackbar { get; set; }
     private StandaloneCodeEditor? Editor;
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
@@ -25,12 +29,19 @@ public partial class CommentEditorComponent : ComponentBase
     [Parameter] public ILanguageProviderService LanguageProvider { get; set; }
     [Parameter] public ICommentable Comment { get; set; }
     [Parameter] public CodeFile File { get; set; }
+
+    [Parameter] public EventCallback<bool> CommentEdited { get; set; }
+
     public Comment Model { get; set; } = new();
     public bool DisplayingMethod = true;
 
-    public CommentEditorComponent(IJSRuntime jsRuntime)
+    public CommentEditorComponent(IJSRuntime jsRuntime, 
+        IDialogService dialogService, 
+        ISnackbar snackbar)
     {
+        this.DialogService = dialogService;
         this.JSRuntime = jsRuntime;
+        this.Snackbar = snackbar;
     }
 
     protected override async Task OnInitializedAsync()
@@ -45,12 +56,9 @@ public partial class CommentEditorComponent : ComponentBase
         if (firstRender)
         {
             this.DisplayingMethod = true;
-            await this.SetEditorValue(this.Comment.Body);
+            await this.SetEditorValue(await this.LanguageProvider.GetObjectBody(this.Comment.Key, this.File.Key));
 
-            if (this.Comment.HasParameters)
-            {
-                this.Model.Params = this.LanguageProvider.GetParameterComments(this.Comment.Key, this.File.Key);
-            }
+            this.Model = await this.LanguageProvider.AnalyzeComment(this.Comment.Key, this.File.Key);
 
             StateHasChanged();
         }
@@ -91,18 +99,28 @@ public partial class CommentEditorComponent : ComponentBase
     {
         if (this.DisplayingMethod)
         {
-            await this.SetEditorValue(System.IO.File.ReadAllText(this.File.Key), true);
+            await this.SetEditorValue(await System.IO.File.ReadAllTextAsync(this.File.Key), true);
             this.DisplayingMethod = false;
-        }            
+        }
         else
         {
-            await this.SetEditorValue(this.Comment.Body, true);
+            await this.SetEditorValue(await this.LanguageProvider.GetObjectBody(this.Comment.Key, this.File.Key));
             this.DisplayingMethod = true;
         }
     }
 
     public async Task SaveChanges()
     {
-        await this.LanguageProvider.AddTriviaToMethod(this.Comment.Key, this.File.Key, this.Model);
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        var dialog = await DialogService.ShowAsync<SimpleConfirmationDialog>("Speichern Bestätigen", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await this.LanguageProvider.AddTriviaToMethod(this.Comment.Key, this.File.Key, this.Model);
+            this.Snackbar.Add("Kommentar zu '" + this.Comment.Name + "' hinzugefügt", Severity.Success);
+            await this.CommentEdited.InvokeAsync(true);
+        }
     }
 }
