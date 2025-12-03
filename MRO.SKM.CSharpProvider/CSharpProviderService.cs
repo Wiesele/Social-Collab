@@ -193,15 +193,20 @@ public class CSharpProviderService : ILanguageProviderService
 
         var root = (CompilationUnitSyntax)await tree.GetRootAsync();
 
+        var node = this.GetSyntaxNode(methodKey, root);
+
+        await this.AddTriviaToNode(root, node, fileName, comment);
+    }
+
+    private SyntaxNode GetSyntaxNode(string methodKey, CompilationUnitSyntax root)
+    {
         var method = root.DescendantNodes()
             .OfType<MethodDeclarationSyntax>()
             .FirstOrDefault(m => m.BuildKey() == methodKey);
 
-
         if (method != null)
         {
-            await this.AddTriviaToMethod(root, method, fileName, comment);
-            return;
+            return method;
         }
 
         var classElement = root.DescendantNodes()
@@ -210,11 +215,19 @@ public class CSharpProviderService : ILanguageProviderService
 
         if (classElement != null)
         {
-            await this.AddTriviaToClass(root, classElement, fileName, comment);
-            return;
+            return classElement;
         }
 
-        throw new FileNotFoundException("Element " + methodKey + " wurde nicht gefunden.", fileName);
+        var property = root.DescendantNodes()
+            .OfType<PropertyDeclarationSyntax>()
+            .FirstOrDefault(m => m.BuildKey() == methodKey);
+
+        if (property != null)
+        {
+            return property;
+        }
+
+        throw new FileNotFoundException("Element " + methodKey + " wurde nicht gefunden.");
     }
 
     public async Task<string> GetObjectBody(string methodKey, string fileName)
@@ -224,7 +237,6 @@ public class CSharpProviderService : ILanguageProviderService
 
         var sourceCode = await File.ReadAllTextAsync(fileName);
 
-
         var tree = CSharpSyntaxTree.ParseText(sourceCode,
             new CSharpParseOptions(LanguageVersion.Preview));
 
@@ -232,32 +244,17 @@ public class CSharpProviderService : ILanguageProviderService
 
         var text = tree.GetText();
 
-        var method = root.DescendantNodes()
-            .OfType<MethodDeclarationSyntax>()
-            .FirstOrDefault(m => m.BuildKey() == methodKey);
+        var node = this.GetSyntaxNode(methodKey, root);
 
+        var code = text.ToString(node.FullSpan);
 
-        if (method != null)
-        {
-            var code = text.ToString(method.FullSpan);
-            return code;
-        }
-
-        var classElement = root.DescendantNodes()
-            .OfType<ClassDeclarationSyntax>()
-            .FirstOrDefault(m => m.BuildKey() == methodKey);
-
-        if (classElement != null)
-        {
-            var code = text.ToString(classElement.FullSpan);
-            return code;
-        }
-
-        throw new FileNotFoundException("Element " + methodKey + " wurde nicht gefunden.", fileName);
+        return code;
     }
 
 
-    private async Task AddTriviaToClass(CompilationUnitSyntax root, ClassDeclarationSyntax method, string fileName,
+    private async Task AddTriviaToNode(CompilationUnitSyntax root, 
+        SyntaxNode method, 
+        string fileName,
         Comment comment)
     {
         var methodIndent = method.GetLeadingTrivia()
@@ -276,27 +273,6 @@ public class CSharpProviderService : ILanguageProviderService
 
         await File.WriteAllTextAsync(fileName, newRoot.ToFullString());
     }
-
-    private async Task AddTriviaToMethod(CompilationUnitSyntax root, MethodDeclarationSyntax method, string fileName,
-        Comment comment)
-    {
-        var methodIndent = method.GetLeadingTrivia()
-            .ToFullString()
-            .Split('\n')
-            .LastOrDefault() ?? "";
-
-        var docText = comment.GetTrivia(methodIndent);
-
-
-        var newLeadingTrivia = SyntaxFactory.ParseLeadingTrivia(docText);
-
-        var newMethod = method.WithLeadingTrivia(newLeadingTrivia);
-
-        var newRoot = root.ReplaceNode(method, newMethod);
-
-        await File.WriteAllTextAsync(fileName, newRoot.ToFullString());
-    }
-
 
     private async Task<SyntaxTriviaList> GetXmlDoc(string methodKey, string fileName)
     {
@@ -310,27 +286,10 @@ public class CSharpProviderService : ILanguageProviderService
             new CSharpParseOptions(LanguageVersion.Preview));
 
         var root = (CompilationUnitSyntax)await tree.GetRootAsync();
+    
+        var node = this.GetSyntaxNode(methodKey, root);
 
-        var method = root.DescendantNodes()
-            .OfType<MethodDeclarationSyntax>()
-            .FirstOrDefault(m => m.BuildKey() == methodKey);
-
-
-        if (method != null)
-        {
-            return method.GetLeadingTrivia();
-        }
-
-        var classElement = root.DescendantNodes()
-            .OfType<ClassDeclarationSyntax>()
-            .FirstOrDefault(m => m.BuildKey() == methodKey);
-
-        if (classElement != null)
-        {
-            return classElement.GetLeadingTrivia();
-        }
-
-        throw new FileNotFoundException("Element " + methodKey + " wurde nicht gefunden.", fileName);
+        return node.GetLeadingTrivia();
     }
 
     public async Task<Comment> AnalyzeComment(string methodKey, string fileName)
