@@ -1,12 +1,47 @@
 ﻿@page "/repository/{id}/settings/ai"
+@using MRO.SKM.SDK.Models
 @inherits BaseRepoPage
+@inject NavigationManager NavigationManager
 
 <PageTitle>AI-Einstellungen</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.Large">
-    <h1>AI-Einstellungen</h1>
-</MudContainer>
+    <MudGrid>
+        <MudItem xs="12">
+            <MudGrid>
+                <MudItem xs="9">
+                    <h1>AI-Einstellungen</h1>
+                </MudItem>
+                <MudItem xs="3" Class="d-flex justify-end">
+                    <MudButton
+                        Variant="Variant.Filled"
+                        StartIcon="@Icons.Material.Filled.Add"
+                        Color="Color.Primary"
+                        OnClick="OpenAddLanguageDialog">AI-Model hinzufügen</MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
 
-@code {
-    
-}
+        <MudItem xs="12">
+            <MudPaper>
+                <MudList T="RepositoryAiConfiguration">
+                    @foreach (var lm in AiModels)
+                    {
+                        <MudListItem OnClick="() => this.NavigateTo(lm.Id)">
+                            <AvatarContent>
+                                <MudAvatar Color="Color.Primary">
+                                    @(string.Concat(LanguageModelServices.First(e => e.UUID == lm.ProviderId).DisplayName.Take(2)))
+                                </MudAvatar>
+                            </AvatarContent>
+                            <ChildContent>
+                                @(LanguageModelServices.First(e => e.UUID == lm.ProviderId).DisplayName)
+                            </ChildContent>
+                        </MudListItem>
+                    }
+
+                </MudList>
+            </MudPaper>
+        </MudItem>
+
+    </MudGrid>
+</MudContainer>

@@ -18,6 +18,7 @@ public class DatabaseContext : DbContext, IDatabaseContext
     public DbSet<CodeFile> CodeFiles { get; set; }
     public DbSet<Class> Classes { get; set; }
     public DbSet<Method> Methods { get; set; }
+    public DbSet<RepositoryAiConfiguration> RepositoryAiConfigurations { get; set; }
     
     
     public async Task<int> SaveChangesAsync()

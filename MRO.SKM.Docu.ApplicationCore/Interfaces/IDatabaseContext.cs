@@ -16,6 +16,7 @@ public interface IDatabaseContext
     
     DbSet<Repository> Repositories { get; set; }
     DbSet<RepositoryLanguage> RepositoryLanguages { get; set; }
+    DbSet<RepositoryAiConfiguration> RepositoryAiConfigurations { get; set; }
     DbSet<CodeFile> CodeFiles { get; set; }
     DbSet<Class> Classes { get; set; }
     DbSet<Method> Methods { get; set; }

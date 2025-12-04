@@ -1,6 +1,11 @@
-﻿namespace MRO.SKM.SDK.Interfaces;
+﻿using MRO.SKM.SDK.Models;
+using MRO.SKM.SDK.Models.LanaugeModels;
 
-public interface ILanguageModelService
+namespace MRO.SKM.SDK.Interfaces;
+
+public interface ILanguageModelService: IBaseProviderService
 {
     Task<string> GenerateSimpleContent(string prompt);
+    LanguageModelDefaults GetDefaults();
+    void GetEditorConfiguration(EditorConfiguration config);
 }

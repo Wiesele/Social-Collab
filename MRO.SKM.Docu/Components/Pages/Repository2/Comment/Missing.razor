@@ -1,0 +1,17 @@
+﻿@page "/repository/{id}/comment/missing"
+@inherits BaseRepoPage
+
+<PageTitle>Fehlende Dokumentation</PageTitle>
+
+<MudDataGrid T="int" VirtualizeServerData="ServerDataFunc" Virtualize="true" Filterable FixedHeader Height="400px" ItemSize="52.68f">
+    <Columns>
+        <PropertyColumn Property="x => x" Title="Number" />
+    </Columns>
+    <RowLoadingContent>
+        <tr class="mud-table-row">
+            <td class="mud-table-cell" colspan="1000">
+                Loading...
+            </td>
+        </tr>
+    </RowLoadingContent>
+</MudDataGrid>

@@ -12,9 +12,14 @@
         <MudNavLink Href="@GetUrl("code")" Match="NavLinkMatch.All"
                     Icon="@Icons.Material.Outlined.Assignment">Code
         </MudNavLink>
-        <MudNavLink Href="@GetUrl("comment")" Match="NavLinkMatch.All"
-                    Icon="@Icons.Material.Outlined.Assignment">Kommentieren
-        </MudNavLink>
+        <MudNavGroup Title="Dokumentieren">
+            <MudNavLink Href="@GetUrl("comment")" Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.Outlined.Assignment">Nach Datei
+            </MudNavLink>
+            <MudNavLink Href="@GetUrl("comment/missing")" Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.Outlined.Assignment">Fehlende Doku
+            </MudNavLink>
+        </MudNavGroup>
 
         <MudDivider></MudDivider>
 

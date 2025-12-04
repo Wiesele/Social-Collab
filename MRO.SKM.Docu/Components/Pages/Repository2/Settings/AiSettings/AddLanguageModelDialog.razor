@@ -1,0 +1,74 @@
+﻿@using MRO.SKM.Docu.Models.DynamicEditors
+@using MRO.SKM.SDK.Interfaces
+@using MRO.SKM.SDK.Models
+@using MRO.SMK.SDK.Models
+@using MRO.SKM.Docu.Components.DynamicEditor
+@inject IEnumerable<ILanguageModelService> providers
+<MudDialog>
+    <TitleContent>
+        Sprachmodell wählen
+    </TitleContent>
+    <DialogContent>
+        <MudSelect Label="Modell" Class="mt-3"
+                   ValueChanged="(Guid d) => OnLanguageProviderChange(d)" Style="min-width: 200px;">
+            <MudSelectItem Value="Guid.Empty">Keine</MudSelectItem>
+            @foreach (var item in providers.OrderBy(e => e.DisplayName))
+            {
+                if (AlreadyAdded.Any(e => e.ProviderId == item.UUID))
+                {
+                    continue;
+                }
+                
+                <MudSelectItem Value="item.UUID">@item.DisplayName</MudSelectItem>
+            }
+        </MudSelect>
+        
+        @if (SourceProviderEditorConfig != null)
+        {
+            <DynamicEditor Configuration="SourceProviderEditorConfig" OnValuesChange="e => SourceProviderEditorValue = e"></DynamicEditor>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="!SubmitEnabled">OK</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    private IMudDialogInstance MudDialog { get; set; }
+    [Parameter]
+    public List<RepositoryAiConfiguration> AlreadyAdded { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok<AddLanguageModelDialogReturnValue>(new() { UUID = this.SelectedGuid, Config = this.SourceProviderEditorValue}));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private Guid SelectedGuid { get; set; } = Guid.Empty;
+    private bool SubmitEnabled = false;
+    private ILanguageProviderService Dummy { get; set; }
+    private EditorConfiguration SourceProviderEditorConfig { get; set; }
+    private List<IDynamicEditorValue> SourceProviderEditorValue { get; set; }
+    
+    private void OnLanguageProviderChange(Guid guid)
+    {
+        this.SelectedGuid = guid;
+        this.SubmitEnabled = this.SelectedGuid != Guid.Empty;
+        var provider = this.providers.FirstOrDefault(e => e.UUID == guid);
+
+        if (provider != null)
+        {
+            var config = new EditorConfiguration();
+            provider.GetEditorConfiguration(config);
+            this.SourceProviderEditorConfig = config;
+        }
+        else
+        {
+            this.SourceProviderEditorConfig = null;
+        }
+        
+        StateHasChanged();
+    }
+
+
+}

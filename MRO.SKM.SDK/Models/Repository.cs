@@ -9,10 +9,12 @@ public class Repository : NamedEntity
     public Repository()
     {
         this.Languages = new();
+        this.RepositoryAiConfigurations = new();
     }
     
     public string Location { get; set; }
     public Guid SourceProviderService { get; set; }
     public string SourceProviderConfiguration { get; set; }
     public List<RepositoryLanguage> Languages { get; set; }
+    public List<RepositoryAiConfiguration> RepositoryAiConfigurations { get; set; }
 }

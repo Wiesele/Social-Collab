@@ -10,6 +10,7 @@ using MRO.SKM.SDK.Models;
 using MRO.SMK.Docu.ApplicationCore.Constants;
 using MRO.SMK.Docu.ApplicationCore.Services;
 using MRO.SMK.SDK.Models;
+using MRO.SKM.Docu.Extensions;
 
 namespace MRO.SKM.Docu.Components.Pages.Repositories;
 
@@ -76,13 +77,8 @@ public partial class Add : ComponentBase
     {
         await this.LoaderService.ShowLoader("Klone Repository");
 
-        var sourceProviderConifig = new Dictionary<string, object>();
-
-        foreach (var item in this.SourceProviderEditorValue)
-        {
-            sourceProviderConifig.Add(item.Name, item.GetValue());
-        }
-
+        var sourceProviderConifig = this.SourceProviderEditorValue.ToDictionary();
+       
         var repo = await this.RepositoryService.CreateAndClone(this.Repository.Name, this.SelectedSourceProvider.UUID, sourceProviderConifig);
 
         this.LoaderService.HideLoader();

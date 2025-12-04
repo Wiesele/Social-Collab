@@ -16,6 +16,7 @@ public class RepositoryService
     private SettingService SettingService { get; set; }
     private IServiceProvider Services { get; set; }
     private IEnumerable<ILanguageProviderService> LanguagesProviderServices { get; set; }
+    private IEnumerable<ILanguageModelService> LanguageModelServices { get; set; }
     private SourceControlService SourceControlService { get; set; }
 
 
@@ -23,12 +24,14 @@ public class RepositoryService
         SettingService settingService,
         IServiceProvider services,
         IEnumerable<ILanguageProviderService> languagesProviderServices,
+        IEnumerable<ILanguageModelService> languageModelServices,
         SourceControlService sourceControlService)
     {
         this.Database = database;
         this.SettingService = settingService;
         this.Services = services;
         this.LanguagesProviderServices = languagesProviderServices;
+        this.LanguageModelServices = languageModelServices;
         this.SourceControlService = sourceControlService;
     }
 
@@ -83,10 +86,35 @@ public class RepositoryService
 
         this.Database.SaveChanges();
     }
+    
+    public void AddAiModel(Repository repository, Guid providerGuid, Dictionary<string, object> sourceProviderConfig)
+    {
+        var repoLM = new RepositoryAiConfiguration()
+        {
+            ProviderId = providerGuid,
+        };
+        var service = this.LanguageModelServices.First(e  => e.UUID == providerGuid);
+
+        var defaults = service.GetDefaults();
+
+        repoLM.GenerateDocPrompt = defaults.GenerateElementDocumentationSystemPrompt;
+        repoLM.Configuration = sourceProviderConfig.AsJson();
+        
+        var repo = this.GetById(repository.Id);
+        repo.RepositoryAiConfigurations.Add(repoLM);
+
+        this.Database.SaveChanges();
+    }
 
     public List<RepositoryLanguage> ListLanguages(Repository repository)
     {
         return this.Database.RepositoryLanguages.Include(e => e.Repository).Where(e => e.Repository.Id == repository.Id)
+            .ToList();
+    }
+    
+    public List<RepositoryAiConfiguration> ListAiModels(Repository repository)
+    {
+        return this.Database.RepositoryAiConfigurations.Include(e => e.Repository).Where(e => e.Repository.Id == repository.Id)
             .ToList();
     }
 
@@ -283,5 +311,24 @@ public class RepositoryService
     public CodeFile? GetCodeFile(string key)
     {
         return this.Database.CodeFiles.FirstOrDefault(e => e.Key == key);
+    }
+
+    public RepositoryAiConfiguration GetAiConfig(Guid configId)
+    {
+        return this.Database.RepositoryAiConfigurations.FirstOrDefault(e => e.Id == configId);  
+    }
+    public RepositoryAiConfiguration GetAiConfig(string llmConfigId)
+    {
+        return this.GetAiConfig(Guid.Parse(llmConfigId));
+    }
+
+    public void UpdateAiConfig(RepositoryAiConfiguration config)
+    {
+        var inDb = this.Database.RepositoryAiConfigurations.First(e => e.Id == config.Id);
+        
+        inDb.GenerateDocPrompt = config.GenerateDocPrompt;
+        inDb.GenerateDoc = config.GenerateDoc;
+
+        this.Database.SaveChanges();
     }
 }

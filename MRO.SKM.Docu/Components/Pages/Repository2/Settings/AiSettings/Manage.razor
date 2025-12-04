@@ -1,0 +1,21 @@
+﻿@page "/repository/{id}/settings/ai/{LLMConfigId}"
+@using Microsoft.CodeAnalysis.CSharp.Syntax
+@inherits BaseRepoPage
+
+<PageTitle>@LanguageModel.DisplayName verwalten</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large">
+    <h3>@LanguageModel.DisplayName verwalten</h3>
+
+    <MudCheckBox @bind-Value="Config.GenerateDoc" For="() => Config.GenerateDoc" Label="Dokumentation erstellen"
+                 Color="Color.Primary"></MudCheckBox>
+
+    <MudTextField For="() => Config.GenerateDocPrompt"
+                  @bind-Value="@Config.GenerateDocPrompt"
+                  Variant="Variant.Outlined"
+                  Label="Dokumentations Prompt"
+                  AutoGrow="true"></MudTextField>
+    
+    <MudButton OnClick="this.SaveChanges">Speichern</MudButton>
+
+</MudContainer>
