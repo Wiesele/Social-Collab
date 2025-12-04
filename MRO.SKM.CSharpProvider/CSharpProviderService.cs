@@ -300,10 +300,19 @@ public class CSharpProviderService : ILanguageProviderService
             .OfType<DocumentationCommentTriviaSyntax>()
             .FirstOrDefault();
 
-        if (docTirvia == null)
-            return new();
-
         var paramsInCode = await this.GetParameterComments(methodKey, fileName);
+
+        if (docTirvia == null)
+        {
+            foreach (var param in paramsInCode)
+            {
+                return new Comment()
+                {
+                    Params = paramsInCode
+                };
+            }            
+        }
+
         var paramsInDoc = docTirvia.GetParams();
 
         foreach (var param in paramsInCode)

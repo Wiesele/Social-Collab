@@ -19,6 +19,7 @@
     <ItemGroup>
       <ProjectReference Include="..\MRO.SKM.CSharpProvider\MRO.SKM.CSharpProvider.csproj" />
       <ProjectReference Include="..\MRO.SKM.GitProvider\MRO.SKM.GitProvider.csproj" />
+      <ProjectReference Include="..\MRO.SKM.Google.Gemini\MRO.SKM.Google.Gemini.csproj" />
       <ProjectReference Include="..\MRO.SKM.SDK\MRO.SKM.SDK.csproj" />
     </ItemGroup>
 

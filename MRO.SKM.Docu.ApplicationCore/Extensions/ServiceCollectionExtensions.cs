@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using MRO.SKM.CSharpProvider;
 using MRO.SKM.GitProvider;
+using MRO.SKM.Google.Gemini;
 using MRO.SMK.Docu.ApplicationCore.Services;
 
 namespace MRO.SMK.Docu.ApplicationCore.Extensions;
@@ -15,6 +16,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<RepositoryService>();
         services.AddScoped<SourceControlService>();
         services.AddScoped<CodeService>();
+        services.AddScoped<LanguageModelService>();
     }
 
     public static void AddSDKResources(this IServiceCollection services)
@@ -25,6 +27,9 @@ public static class ServiceCollectionExtensions
 
         var csProvider = new CSharpProvider();
         csProvider.RegisterServices(services);
+        
+        var geminiProvider = new GeminiProvider();
+        geminiProvider.RegisterServices(services);
     }
 
     public static IApplicationBuilder UseApplicationCore(this IApplicationBuilder app)

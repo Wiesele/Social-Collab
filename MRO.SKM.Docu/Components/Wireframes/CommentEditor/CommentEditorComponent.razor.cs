@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MRO.SKM.Docu.Components.Wireframes.SimpleDialogs;
+using MRO.SKM.Google.Gemini;
 using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models;
 using MRO.SKM.SDK.Models.Comments;
+using MRO.SMK.Docu.ApplicationCore.Services;
 using MudBlazor;
 
 namespace MRO.SKM.Docu.Components.Wireframes.CommentEditor;
@@ -15,6 +17,7 @@ public partial class CommentEditorComponent : ComponentBase
     private IJSRuntime JSRuntime { get; set; }
     private IDialogService DialogService { get; set; }
     private ISnackbar Snackbar { get; set; }
+    private LanguageModelService LanguageModelService { get; set; }
     private StandaloneCodeEditor? Editor;
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
@@ -37,8 +40,10 @@ public partial class CommentEditorComponent : ComponentBase
 
     public CommentEditorComponent(IJSRuntime jsRuntime, 
         IDialogService dialogService, 
-        ISnackbar snackbar)
+        ISnackbar snackbar,
+        LanguageModelService languageModelService)
     {
+        this.LanguageModelService = languageModelService;
         this.DialogService = dialogService;
         this.JSRuntime = jsRuntime;
         this.Snackbar = snackbar;
@@ -61,6 +66,8 @@ public partial class CommentEditorComponent : ComponentBase
             this.Model = await this.LanguageProvider.AnalyzeComment(this.Comment.Key, this.File.Key);
 
             StateHasChanged();
+            
+            var aiComment = await this.LanguageModelService.GenerateDocumentation(this.Comment, await System.IO.File.ReadAllTextAsync(this.File.Key));
         }
     }
 
