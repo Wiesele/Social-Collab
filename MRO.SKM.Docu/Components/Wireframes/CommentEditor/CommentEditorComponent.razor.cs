@@ -7,6 +7,7 @@ using MRO.SKM.Google.Gemini;
 using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models;
 using MRO.SKM.SDK.Models.Comments;
+using MRO.SKM.SDK.Models.LanaugeModels;
 using MRO.SMK.Docu.ApplicationCore.Services;
 using MudBlazor;
 
@@ -29,18 +30,18 @@ public partial class CommentEditorComponent : ComponentBase
             ReadOnly = true,
         };
     }
-
+    
     [Parameter] public ILanguageProviderService LanguageProvider { get; set; }
     [Parameter] public ICommentable Comment { get; set; }
     [Parameter] public CodeFile File { get; set; }
     [Parameter] public EventCallback<bool> CommentEdited { get; set; }
-    public Comment AiComment { get; set; }
-
+    private LmRepositoryFeatures RepositoryFeatures { get; set; } = new();
+    public Comment AiComment { get; set; } = new();
     public Comment Model { get; set; } = new();
     public bool DisplayingMethod = true;
 
-    public CommentEditorComponent(IJSRuntime jsRuntime, 
-        IDialogService dialogService, 
+    public CommentEditorComponent(IJSRuntime jsRuntime,
+        IDialogService dialogService,
         ISnackbar snackbar,
         RepositoryService repositoryService,
         LanguageModelService languageModelService)
@@ -67,11 +68,18 @@ public partial class CommentEditorComponent : ComponentBase
             await this.SetEditorValue(await this.LanguageProvider.GetObjectBody(this.Comment.Key, this.File.Key));
 
             this.Model = await this.LanguageProvider.AnalyzeComment(this.Comment.Key, this.File.Key);
+            var repository = this.RepositoryService.GetById(this.File.RepositoryId);
+
+            this.RepositoryFeatures = this.LanguageModelService.GetRepositoryFeatures(repository);
+
 
             StateHasChanged();
-
-            var repository = this.RepositoryService.GetById(this.File.RepositoryId);
-            var aiComment = await this.LanguageModelService.GenerateDocumentation(repository ,this.Comment);
+            
+            this.InvokeAsync(async () =>
+            {
+                this.AiComment = await this.LanguageModelService.GenerateDocumentation(repository, this.Comment);
+                this.StateHasChanged();
+            });
         }
     }
 

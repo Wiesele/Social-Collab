@@ -1,0 +1,77 @@
+﻿@using Microsoft.IdentityModel.Tokens
+@using MRO.SKM.SDk.Extensions
+
+<MudGrid>
+    <MudItem md="@MdCalc">
+        <MudTextField For="() => BindingValue"
+                      @bind-Value="@BindingValue"
+                      Variant="Variant.Outlined"
+                      Label="@Lable"
+                      MaxLines="128"
+                      AutoGrow="true"></MudTextField>
+    </MudItem>
+    
+    @if (AiDocumentationEnabled)
+    {
+        <MudItem md="1" Class="d-flex" Style="align-items: center;">
+            @if (AiDocumentation.IsNullOrWhiteSpace())
+            {
+                <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+            }
+            else
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.AutoFixHigh" 
+                               OnClick="() => this.PopupOpen = !this.PopupOpen"
+                               Variant="Variant.Filled"></MudIconButton>
+
+                <MudPopover Open="PopupOpen"
+                            Class="pa-4"
+                            Fixed="true"
+                            RelativeWidth="DropdownWidth.Ignore"
+                            AnchorOrigin="Origin.CenterRight"
+                            TransformOrigin="Origin.CenterLeft">
+                    <MudText Style="max-width: 400px">@AiDocumentation</MudText>
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Primary" 
+                               OnClick="() => this.BindingValue = this.AiDocumentation"
+                               Style="margin-top: 15px;">Übernehmen</MudButton>
+                </MudPopover>
+            }
+           
+        </MudItem>
+    }
+</MudGrid>
+
+
+@code {
+    private string _value;
+
+    [Parameter]
+    public string Lable { get; set; }
+    [Parameter]
+    public string AiDocumentation { get; set; }
+    [Parameter]
+    public bool AiDocumentationEnabled { get; set; }
+
+    private bool PopupOpen { get; set; } = false;
+    private int MdCalc
+    {
+        get { return this.AiDocumentationEnabled ? 11 : 12; }
+    }
+    
+    [Parameter]
+    public string BindingValue
+    {
+        get => _value;
+        set
+        {
+            if (_value == value ) return;
+            _value = value;
+            BindingValueChanged.InvokeAsync(value);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> BindingValueChanged { get; set; } 
+    
+}

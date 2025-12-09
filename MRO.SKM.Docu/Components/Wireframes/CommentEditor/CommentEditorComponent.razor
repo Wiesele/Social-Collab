@@ -13,23 +13,18 @@
                     <MudCardContent>
                         <MudGrid>
                             <MudItem md="12">
-                                <MudTextField For="() => Model.Summary"
-                                              @bind-Value="@Model.Summary"
-                                              Variant="Variant.Outlined"
-                                              Label="Zusammenfassung"
-                                              MaxLines="128"
-                                              AutoGrow="true"></MudTextField>
+                                <CommentEditorInput @bind-BindingValue="@Model.Summary" 
+                                                    AiDocumentationEnabled="@RepositoryFeatures.GenerateDoc" 
+                                                    Lable="Zusammenfassung"
+                                                    AiDocumentation="@AiComment.Summary"></CommentEditorInput>
                             </MudItem>
-
                             @if (Comment.HasReturnValue)
                             {
                                 <MudItem md="12">
-                                    <MudTextField For="() => Model.Returns"
-                                                  @bind-Value="@Model.Returns"
-                                                  Variant="Variant.Outlined"
-                                                  Label="Rückgabewert"
-                                                  MaxLines="128"
-                                                  AutoGrow="true"></MudTextField>
+                                    <CommentEditorInput @bind-BindingValue="@Model.Returns" 
+                                                        AiDocumentationEnabled="@RepositoryFeatures.GenerateDoc" 
+                                                        Lable="Rückgabewert"
+                                                        AiDocumentation="@AiComment.Returns"></CommentEditorInput>
                                 </MudItem>
                             }
                         </MudGrid>
@@ -50,13 +45,17 @@
                             <MudGrid>
                                 @foreach (var param in Model.Params)
                                 {
+                                    var aiSuggestion = AiComment.Params.FirstOrDefault(e => e.Ref == param.Ref);
+                                    if (aiSuggestion == null)
+                                    {
+                                        aiSuggestion = new();
+                                    }
+                                    
                                     <MudItem md="12">
-                                        <MudTextField For="() => param.Text"
-                                                      @bind-Value="@param.Text"
-                                                      Variant="Variant.Outlined"
-                                                      Label="@param.DisplayName"
-                                                      MaxLines="128"
-                                                      AutoGrow="true"></MudTextField>
+                                        <CommentEditorInput @bind-BindingValue="@param.Text" 
+                                                            AiDocumentationEnabled="@RepositoryFeatures.GenerateDoc" 
+                                                            Lable="@param.DisplayName"
+                                                            AiDocumentation="@aiSuggestion.Text"></CommentEditorInput>
                                     </MudItem>
                                 }
                             </MudGrid>
@@ -76,7 +75,8 @@
                                         <MudText Typo="Typo.h6">Exceptions</MudText>
                                     </MudItem>
                                     <MudItem>
-                                        <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="AddException"></MudIconButton>
+                                        <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary"
+                                                       OnClick="AddException"></MudIconButton>
                                     </MudItem>
                                 </MudGrid>
                             </CardHeaderContent>
@@ -100,7 +100,8 @@
                                                       Label="@("Exception " + (Model.Exceptions.IndexOf(param) + 1) + " Referenz")"></MudTextField>
                                     </MudItem>
                                     <MudItem md="1">
-                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="e => Model.Exceptions.RemoveAt(Model.Exceptions.IndexOf(param))"></MudIconButton>
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary"
+                                                       OnClick="e => Model.Exceptions.RemoveAt(Model.Exceptions.IndexOf(param))"></MudIconButton>
                                     </MudItem>
                                 }
                             </MudGrid>
@@ -112,17 +113,19 @@
     </MudItem>
     <MudItem md="6" Style="height: 100%">
         <div class="d-flex justify-space-between ml-6 mr-6 mb-4">
-        <MudButton Variant="Variant.Filled" Color="Color.Default" OnClick="ToggleDisplayedCode">
-            @if (DisplayingMethod)
-            {
-                <MudText>Datei anzeigen</MudText>
-            }
-            else
-            {
-                <MudText>Element anzeigen</MudText>
-            }
-        </MudButton>
-        <MudButton OnClick="(async () => await this.SaveChanges())" Variant="Variant.Filled" Color="Color.Primary">Speichern</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Default" OnClick="ToggleDisplayedCode">
+                @if (DisplayingMethod)
+                {
+                    <MudText>Datei anzeigen</MudText>
+                }
+                else
+                {
+                    <MudText>Element anzeigen</MudText>
+                }
+            </MudButton>
+            <MudButton OnClick="(async () => await this.SaveChanges())" Variant="Variant.Filled" Color="Color.Primary">
+                Speichern
+            </MudButton>
         </div>
 
         <StandaloneCodeEditor @ref="Editor" Id="code-editor-comment" CssClass="code-editor"

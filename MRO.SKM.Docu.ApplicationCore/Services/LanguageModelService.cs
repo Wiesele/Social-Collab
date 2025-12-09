@@ -6,6 +6,7 @@ using MRO.SKM.Docu.ApplicationCore.Interfaces;
 using MRO.SKM.SDk.Extensions;
 using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models.Comments;
+using MRO.SKM.SDK.Models.LanaugeModels;
 using MRO.SMK.SDK.Models;
 
 namespace MRO.SMK.Docu.ApplicationCore.Services;
@@ -53,7 +54,34 @@ public class LanguageModelService
 
         var contentString =
             "{\n  \"Summary\": \"Erstellt einen Snapshot des aktuellen Zustands des übergebenen Schachspiels, um diesen beispielsweise für Analysezwecke, Undo-/Redo-Mechanismen oder spätere Persistierung verfügbar zu machen.\",\n  \"Returns\": \"Die Methode gibt keinen Wert zurück.\",\n  \"Exceptions\": [],\n  \"Params\": [\n    {\n      \"Text\": \"Das Schachspielobjekt, dessen aktueller Zustand als Snapshot gesichert werden soll.\",\n      \"Ref\": \"game\",\n      \"DisplayName\": \"ChessGame\"\n    }\n  ]\n}\n";
+
+        await Task.Delay(5000);
         
         return contentString.ParseAsJson<Comment>();
+    }
+
+    public LmRepositoryFeatures GetRepositoryFeatures(Repository repository)
+    {
+        var config = this.DatabaseContext
+            .Repositories
+            .Include(e => e.RepositoryAiConfigurations)
+            .FirstOrDefault(e => e.Id == repository.Id);
+        var data = new LmRepositoryFeatures();
+
+        if (config == null)
+        {
+            return data;
+        }
+
+
+        foreach (var repositoryAiConfiguration in config.RepositoryAiConfigurations)
+        {
+            if (repositoryAiConfiguration.GenerateDoc)
+            {
+                data.GenerateDoc = true;
+            }
+        }
+        
+        return data;
     }
 }
