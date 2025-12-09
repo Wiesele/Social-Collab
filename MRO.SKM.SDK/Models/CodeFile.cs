@@ -12,4 +12,5 @@ public class CodeFile: CodeObject
     
     public List<Class> Classes { get; set; }
     public Repository Repository { get; set; }
+    public Guid RepositoryId { get; set; }
 }

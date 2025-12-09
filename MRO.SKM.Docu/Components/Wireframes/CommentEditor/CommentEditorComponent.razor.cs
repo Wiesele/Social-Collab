@@ -17,6 +17,7 @@ public partial class CommentEditorComponent : ComponentBase
     private IJSRuntime JSRuntime { get; set; }
     private IDialogService DialogService { get; set; }
     private ISnackbar Snackbar { get; set; }
+    private RepositoryService RepositoryService { get; set; }
     private LanguageModelService LanguageModelService { get; set; }
     private StandaloneCodeEditor? Editor;
 
@@ -32,8 +33,8 @@ public partial class CommentEditorComponent : ComponentBase
     [Parameter] public ILanguageProviderService LanguageProvider { get; set; }
     [Parameter] public ICommentable Comment { get; set; }
     [Parameter] public CodeFile File { get; set; }
-
     [Parameter] public EventCallback<bool> CommentEdited { get; set; }
+    public Comment AiComment { get; set; }
 
     public Comment Model { get; set; } = new();
     public bool DisplayingMethod = true;
@@ -41,12 +42,14 @@ public partial class CommentEditorComponent : ComponentBase
     public CommentEditorComponent(IJSRuntime jsRuntime, 
         IDialogService dialogService, 
         ISnackbar snackbar,
+        RepositoryService repositoryService,
         LanguageModelService languageModelService)
     {
         this.LanguageModelService = languageModelService;
         this.DialogService = dialogService;
         this.JSRuntime = jsRuntime;
         this.Snackbar = snackbar;
+        this.RepositoryService = repositoryService;
     }
 
     protected override async Task OnInitializedAsync()
@@ -66,8 +69,9 @@ public partial class CommentEditorComponent : ComponentBase
             this.Model = await this.LanguageProvider.AnalyzeComment(this.Comment.Key, this.File.Key);
 
             StateHasChanged();
-            
-            var aiComment = await this.LanguageModelService.GenerateDocumentation(this.Comment, await System.IO.File.ReadAllTextAsync(this.File.Key));
+
+            var repository = this.RepositoryService.GetById(this.File.RepositoryId);
+            var aiComment = await this.LanguageModelService.GenerateDocumentation(repository ,this.Comment);
         }
     }
 

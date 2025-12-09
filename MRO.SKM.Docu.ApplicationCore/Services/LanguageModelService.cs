@@ -1,23 +1,59 @@
-﻿using MRO.SKM.SDK.Interfaces;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Schema;
+using Microsoft.EntityFrameworkCore;
+using MRO.SKM.Docu.ApplicationCore.Interfaces;
+using MRO.SKM.SDk.Extensions;
+using MRO.SKM.SDK.Interfaces;
+using MRO.SKM.SDK.Models.Comments;
+using MRO.SMK.SDK.Models;
 
 namespace MRO.SMK.Docu.ApplicationCore.Services;
 
 public class LanguageModelService
 {
+    private IDatabaseContext DatabaseContext { get; set; }
     private IEnumerable<ILanguageModelService> LanugageModels { get; set; }
-    public LanguageModelService(IEnumerable<ILanguageModelService> languageModels)
+    
+    public LanguageModelService(IEnumerable<ILanguageModelService> languageModels,
+        IDatabaseContext databaseContext) 
     {
+        this.DatabaseContext = databaseContext;
         this.LanugageModels = languageModels;
     }
 
-    public async Task<string> GenerateDocumentation(ICommentable classOrModel, string fileContents)
+    public async Task<Comment> GenerateDocumentation(Repository repository, ICommentable classOrModel)
     {
-        var model = this.LanugageModels.First();
+    
+        var configuration = this.DatabaseContext
+            .RepositoryAiConfigurations
+            .Include(e => e.Repository)
+            .FirstOrDefault(e => e.GenerateDoc == true && e.Repository.Id == repository.Id);
 
-        var prompt = "Du bist ein Senior Programmierer. \n" +
-                     "Deine Aufgabe ist es detailierte Kommentare für Code zu erstellen. \n" +
-                     "Erstelle eine Beschreibung für die folgenden Codeausschnit:\n\n" + classOrModel.Body;
+        if (configuration == null)
+        {
+            return null;
+        }
         
-        return await model.GenerateSimpleContent(prompt);
+        var model = this.LanugageModels.First(e => e.UUID == configuration.ProviderId);
+
+        
+        JsonSerializerOptions options = JsonSerializerOptions.Default;
+        JsonNode schema = options.GetJsonSchemaAsNode(typeof(Comment));
+        
+        var prompt = configuration.GenerateDocPrompt;
+        var param = new Dictionary<string, string>();
+        param.Add("Code", classOrModel.Body);
+        param.Add("ElementName", classOrModel.Name);
+        param.Add("Format", schema["properties"].ToString());
+        
+        prompt = prompt.ReplaceVariables(param);
+        
+        // var contentString =  await model.GenerateSimpleContent(configuration.Configuration, prompt);
+
+        var contentString =
+            "{\n  \"Summary\": \"Erstellt einen Snapshot des aktuellen Zustands des übergebenen Schachspiels, um diesen beispielsweise für Analysezwecke, Undo-/Redo-Mechanismen oder spätere Persistierung verfügbar zu machen.\",\n  \"Returns\": \"Die Methode gibt keinen Wert zurück.\",\n  \"Exceptions\": [],\n  \"Params\": [\n    {\n      \"Text\": \"Das Schachspielobjekt, dessen aktueller Zustand als Snapshot gesichert werden soll.\",\n      \"Ref\": \"game\",\n      \"DisplayName\": \"ChessGame\"\n    }\n  ]\n}\n";
+        
+        return contentString.ParseAsJson<Comment>();
     }
 }

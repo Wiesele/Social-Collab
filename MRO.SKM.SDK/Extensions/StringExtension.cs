@@ -21,4 +21,14 @@ public static class StringExtension
     {
         return string.IsNullOrEmpty(str);
     }
+
+    public static string ReplaceVariables(this string str, Dictionary<string, string> replacements)
+    {
+        foreach (var key in replacements)
+        {
+            str = str.Replace("<" + key.Key + ">", key.Value);
+        }
+
+        return str;
+    }
 }
