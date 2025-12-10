@@ -1,0 +1,14 @@
+﻿@page "/repository/{id}/settings/languages/{LanguageServiceId}"
+@inherits BaseRepoPage
+
+
+<PageTitle>
+    @if (this.LanguageProviderService != null)
+    {
+        <MudText>Sprache @this.LanguageProviderService.DisplayName verwalten</MudText>
+    }
+</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large">
+    <MudButton OnClick="(async() => await GenerateDocumentation())" Variant="Variant.Filled" Color="Color.Primary">Dokumentation erstellen</MudButton>
+</MudContainer>

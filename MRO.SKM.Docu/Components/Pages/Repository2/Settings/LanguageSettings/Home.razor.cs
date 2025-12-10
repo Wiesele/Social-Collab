@@ -50,4 +50,9 @@ public partial class Home : BaseRepoPage
             this.StateHasChanged();
         }
     }
+    
+    private void NavigateTo(Guid providerId)
+    {
+        this.NavigationManager.NavigateTo("/repository/" + this.Id + "/settings/languages/" + providerId.ToString());
+    }
 }

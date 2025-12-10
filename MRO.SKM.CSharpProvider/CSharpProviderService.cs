@@ -1,6 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Reflection.Metadata;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MRO.SKM.CSharpProvider.Documentation;
 using MRO.SKM.CSharpProvider.Extensions;
 using MRO.SKM.SDk.Extensions;
 using MRO.SKM.SDK.Interfaces;
@@ -16,7 +18,13 @@ public class CSharpProviderService : ILanguageProviderService
     public string DisplayName { get; } = "C#";
 
     public string FileExtension { get; } = ".cs";
+    
+    private DocFxService DocFxService { get; set; }
 
+    public CSharpProviderService(DocFxService docFxService)
+    {
+        this.DocFxService = docFxService;
+    }
 
     public async Task<List<CodeFile>> AnalyzeRepository(Repository repository)
     {
@@ -336,6 +344,7 @@ public class CSharpProviderService : ILanguageProviderService
         return doc;
     }
 
+
     public async Task<List<CommentParameter>> GetParameterComments(string methodKey, string fileName)
     {
         var sourceCode = await File.ReadAllTextAsync(fileName);
@@ -377,5 +386,10 @@ public class CSharpProviderService : ILanguageProviderService
 
 
         return new();
+    }
+    
+    public async Task<byte[]> GenerateHtmlDocumentation(Repository repository)
+    {
+        return await this.DocFxService.GenerateHtmlDocumentation(repository);
     }
 }

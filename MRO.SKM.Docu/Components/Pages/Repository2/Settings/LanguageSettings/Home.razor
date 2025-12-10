@@ -1,6 +1,7 @@
 ﻿@page "/repository/{id}/settings/languages"
 @using MRO.SKM.SDK.Models
 @inherits BaseRepoPage
+@inject NavigationManager NavigationManager
 
 <PageTitle>Spracheinstellungen</PageTitle>
 
@@ -26,7 +27,7 @@
             <MudList T="RepositoryLanguage">
                 @foreach (var repo in Languages)
                 {
-                    <MudListItem>
+                    <MudListItem OnClick="() => this.NavigateTo(repo.ProviderId)">
                         <AvatarContent>
                             <MudAvatar Color="Color.Primary">
                                 @(string.Concat(LanguageProviderServices.First(e => e.UUID == repo.ProviderId).DisplayName.Take(2)))

@@ -11,4 +11,5 @@ public interface ILanguageProviderService: IBaseProviderService
     Task AddTriviaToMethod(string methodKey, string fileName, Comment comment);
     Task<string> GetObjectBody(string methodKey, string fileName);
     Task<Comment> AnalyzeComment(string methodKey, string fileName);
+    Task<byte[]> GenerateHtmlDocumentation(Repository repository);
 }

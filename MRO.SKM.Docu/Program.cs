@@ -19,6 +19,8 @@ namespace MRO.SKM.Docu
             builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("debug.Db"));
             builder.Services.AddApplicationCore();
 
+            builder.Services.AddHttpClient();
+            
             builder.Services.AddMudServices(config =>
             {
                 config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
