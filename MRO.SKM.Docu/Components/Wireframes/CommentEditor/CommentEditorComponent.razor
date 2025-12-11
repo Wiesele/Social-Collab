@@ -16,7 +16,9 @@
                                 <CommentEditorInput @bind-BindingValue="@Model.Summary" 
                                                     AiDocumentationEnabled="@RepositoryFeatures.GenerateDoc" 
                                                     Lable="Zusammenfassung"
-                                                    AiDocumentation="@AiComment.Summary"></CommentEditorInput>
+                                                    AiDocumentation="@AiComment.Summary"
+                                                    LoadOnDemand="!AutoLoadAiSuggestions"
+                                                    ShowAiPreviewButtonClicked="() => LazyLoadAiSuggestions()"></CommentEditorInput>
                             </MudItem>
                             @if (Comment.HasReturnValue)
                             {
@@ -24,7 +26,9 @@
                                     <CommentEditorInput @bind-BindingValue="@Model.Returns" 
                                                         AiDocumentationEnabled="@RepositoryFeatures.GenerateDoc" 
                                                         Lable="Rückgabewert"
-                                                        AiDocumentation="@AiComment.Returns"></CommentEditorInput>
+                                                        AiDocumentation="@AiComment.Returns"
+                                                        LoadOnDemand="!AutoLoadAiSuggestions"
+                                                        ShowAiPreviewButtonClicked="() => LazyLoadAiSuggestions()"></CommentEditorInput>
                                 </MudItem>
                             }
                         </MudGrid>
@@ -55,7 +59,9 @@
                                         <CommentEditorInput @bind-BindingValue="@param.Text" 
                                                             AiDocumentationEnabled="@RepositoryFeatures.GenerateDoc" 
                                                             Lable="@param.DisplayName"
-                                                            AiDocumentation="@aiSuggestion.Text"></CommentEditorInput>
+                                                            AiDocumentation="@aiSuggestion.Text"
+                                                            LoadOnDemand="!AutoLoadAiSuggestions"
+                                                            ShowAiPreviewButtonClicked="() => LazyLoadAiSuggestions()"></CommentEditorInput>
                                     </MudItem>
                                 }
                             </MudGrid>

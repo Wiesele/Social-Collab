@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MRO.SKM.Docu.Components.Wireframes.SimpleDialogs;
 using MRO.SKM.Google.Gemini;
+using MRO.SKM.SDk.Extensions;
 using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models;
 using MRO.SKM.SDK.Models.Comments;
 using MRO.SKM.SDK.Models.LanaugeModels;
 using MRO.SMK.Docu.ApplicationCore.Services;
+using MRO.SMK.SDK.Models;
 using MudBlazor;
 
 namespace MRO.SKM.Docu.Components.Wireframes.CommentEditor;
@@ -39,6 +41,9 @@ public partial class CommentEditorComponent : ComponentBase
     public Comment AiComment { get; set; } = new();
     public Comment Model { get; set; } = new();
     public bool DisplayingMethod = true;
+    private Repository Repository { get; set; } 
+    private bool AutoLoadAiSuggestions { get; set; }
+    private bool AiSuggestionsLoaded { get; set; }
 
     public CommentEditorComponent(IJSRuntime jsRuntime,
         IDialogService dialogService,
@@ -68,21 +73,42 @@ public partial class CommentEditorComponent : ComponentBase
             await this.SetEditorValue(await this.LanguageProvider.GetObjectBody(this.Comment.Key, this.File.Key));
 
             this.Model = await this.LanguageProvider.AnalyzeComment(this.Comment.Key, this.File.Key);
-            var repository = this.RepositoryService.GetById(this.File.RepositoryId);
+            this.Repository = this.RepositoryService.GetById(this.File.RepositoryId);
 
-            this.RepositoryFeatures = this.LanguageModelService.GetRepositoryFeatures(repository);
+            this.RepositoryFeatures = this.LanguageModelService.GetRepositoryFeatures(this.Repository);
 
-
-            StateHasChanged();
-            
-            this.InvokeAsync(async () =>
+            if (this.Model.Summary.IsNullOrWhiteSpace())
             {
-                this.AiComment = await this.LanguageModelService.GenerateDocumentation(repository, this.Comment);
-                this.StateHasChanged();
-            });
+                this.AutoLoadAiSuggestions = true;
+                this.LoadAiSuggestions();
+            }
+            else
+            {
+                this.AutoLoadAiSuggestions = false;
+            }
+            
+            StateHasChanged();
         }
     }
 
+    private void LazyLoadAiSuggestions()
+    {
+        if (!this.AiSuggestionsLoaded)
+        {
+            this.LoadAiSuggestions();
+        }
+    }
+
+    private void LoadAiSuggestions()
+    {
+        this.AiSuggestionsLoaded = true;
+        this.InvokeAsync(async () =>
+        {
+            this.AiComment = await this.LanguageModelService.GenerateDocumentation(this.Repository, this.Comment);
+            this.StateHasChanged();
+        });
+    }
+    
     private async Task SetEditorValue(string text, bool skipTimeout = false)
     {
         if (!skipTimeout)
