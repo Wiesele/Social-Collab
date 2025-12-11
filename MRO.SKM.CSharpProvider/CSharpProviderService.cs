@@ -325,15 +325,24 @@ public class CSharpProviderService : ILanguageProviderService
             }
         }
 
-        var doc = new Comment()
+        if (docTirvia != null)
         {
-            Summary = docTirvia.GetElementText("summary"),
-            Returns = docTirvia.GetElementText("returns"),
-            Params = paramsInCode,
-            Exceptions = docTirvia.GetExceptions().ToList()
-        };
 
-        return doc;
+            return new Comment()
+            {
+                Summary = docTirvia.GetElementText("summary"),
+                Returns = docTirvia.GetElementText("returns"),
+                Params = paramsInCode,
+                Exceptions = docTirvia.GetExceptions().ToList()
+            };
+        }
+        else
+        {
+            return new Comment()
+            {
+                Params = paramsInCode
+            };
+        }
     }
 
     public async Task<List<CommentParameter>> GetParameterComments(string methodKey, string fileName)

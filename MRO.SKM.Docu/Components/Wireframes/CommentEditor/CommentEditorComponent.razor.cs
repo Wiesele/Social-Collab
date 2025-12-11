@@ -65,8 +65,6 @@ public partial class CommentEditorComponent : ComponentBase
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnAfterRenderAsync(firstRender);
-
         if (firstRender)
         {
             this.DisplayingMethod = true;
@@ -89,6 +87,8 @@ public partial class CommentEditorComponent : ComponentBase
             
             StateHasChanged();
         }
+        await base.OnAfterRenderAsync(firstRender);
+        
     }
 
     private void LazyLoadAiSuggestions()
