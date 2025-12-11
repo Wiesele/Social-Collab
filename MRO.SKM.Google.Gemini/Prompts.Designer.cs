@@ -63,7 +63,15 @@ namespace MRO.SKM.Google.Gemini {
         ///   Looks up a localized string similar to Du bist ein Senior Programmierer.
         ///Deine Aufgabe ist es detailierte Kommentare für Code zu erstellen.
         ///Erstelle eine Beschreibung für die folgenden Codeausschnit:
-        ///&lt;code&gt;.
+        ///
+        ///&lt;Code&gt;
+        ///
+        ///Beschränke deine Antwort auf das Element &quot;&lt;ElementName&gt;&quot;
+        ///
+        ///Antworte in folgendem Format:
+        ///&lt;Format&gt;
+        ///
+        ///Antworte auf Deutsch..
         /// </summary>
         internal static string GenerateDocumentation {
             get {

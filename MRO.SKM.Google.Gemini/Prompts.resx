@@ -22,6 +22,14 @@
         <value>Du bist ein Senior Programmierer.
 Deine Aufgabe ist es detailierte Kommentare für Code zu erstellen.
 Erstelle eine Beschreibung für die folgenden Codeausschnit:
-&lt;code&gt;</value>
+
+&lt;Code&gt;
+
+Beschränke deine Antwort auf das Element "&lt;ElementName&gt;"
+
+Antworte in folgendem Format:
+&lt;Format&gt;
+
+Antworte auf Deutsch.</value>
     </data>
 </root>
