@@ -1,4 +1,5 @@
-﻿using Google.GenAI;
+﻿using System.Runtime.Serialization;
+using Google.GenAI;
 using Google.GenAI.Types;
 using MRO.SKM.Google.Gemini.Models;
 using MRO.SKM.SDK.Models;
@@ -11,20 +12,48 @@ public abstract class GeminiBaseService
     protected async Task<string> GenerateSimpleContent(string model, string apiKey, string prompt, string schema)
     {
         var client = new Client(apiKey: apiKey, vertexAI: false);
-        
+
+        var thinkConfig = new ThinkingConfig();
+        thinkConfig.ThinkingBudget = 0;
+
         var config = new GenerateContentConfig();
         config.ResponseMimeType = "application/json";
-        config.ResponseJsonSchema = schema;
-        
-        var response = await client.Models.GenerateContentAsync(
-            model: model, 
-            contents: prompt,
+        config.ResponseSchema = Schema.FromJson(schema);
+        config.ThinkingConfig = thinkConfig;
+
+
+        // var response = await client.Models.GenerateContentAsync(
+        //     model: model,
+        //     contents: prompt,
+        //     config: config
+        // );
+        //
+        // var responseContent = response.Candidates[0].Content.Parts[0].Text;
+        //
+        // return this.CleanupString(responseContent);
+
+        var contents = new Content();
+        contents.Role = "user";
+        contents.Parts = new();
+        contents.Parts.Add(new()
+        {
+            Text = prompt
+        });
+
+        var response = client.Models.GenerateContentStreamAsync(
+            model: model,
+            contents: contents,
             config: config
         );
 
-        var responseContent =  response.Candidates[0].Content.Parts[0].Text;
-        
-        return this.CleanupString(responseContent);
+        var result = "";
+
+        await foreach (var chunk in response)
+        {
+            result += chunk.Candidates.First().Content.Parts.First().Text;
+        }
+
+        return result;
     }
 
     private string CleanupString(string str)
@@ -36,13 +65,13 @@ public abstract class GeminiBaseService
 
         return str;
     }
-    
+
     public LanguageModelDefaults GetDefaults()
     {
         var defaults = new LanguageModelDefaults();
 
         defaults.GenerateElementDocumentationSystemPrompt = Prompts.GenerateDocumentation;
-        
+
         return defaults;
     }
 

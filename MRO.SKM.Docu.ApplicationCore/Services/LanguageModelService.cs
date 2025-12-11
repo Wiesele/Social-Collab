@@ -40,17 +40,22 @@ public class LanguageModelService
 
         
         JsonSerializerOptions options = JsonSerializerOptions.Default;
-        JsonNode schema = options.GetJsonSchemaAsNode(typeof(Comment));
+        var test = new JsonSchemaExporterOptions()
+        {
+            TreatNullObliviousAsNonNullable = true,
+        };
+        JsonNode schema = options.GetJsonSchemaAsNode(typeof(Comment), test);
+        var schemaString = schema.ToString();
         
         var prompt = configuration.GenerateDocPrompt;
         var param = new Dictionary<string, string>();
         param.Add("Code", classOrModel.Body);
         param.Add("ElementName", classOrModel.Name);
-        param.Add("Format", schema["properties"].ToString());
+        param.Add("Format", schemaString);
         
         prompt = prompt.ReplaceVariables(param);
         
-        var contentString =  await model.GenerateSimpleContent(configuration.Configuration, prompt, schema.ToString());
+        var contentString =  await model.GenerateSimpleContent(configuration.Configuration, prompt, schemaString);
         
         return contentString.ParseAsJson<Comment>();
     }
