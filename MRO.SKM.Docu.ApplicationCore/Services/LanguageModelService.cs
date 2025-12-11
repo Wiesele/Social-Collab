@@ -50,12 +50,7 @@ public class LanguageModelService
         
         prompt = prompt.ReplaceVariables(param);
         
-        // var contentString =  await model.GenerateSimpleContent(configuration.Configuration, prompt);
-
-        var contentString =
-            "{\n  \"Summary\": \"Erstellt einen Snapshot des aktuellen Zustands des übergebenen Schachspiels, um diesen beispielsweise für Analysezwecke, Undo-/Redo-Mechanismen oder spätere Persistierung verfügbar zu machen.\",\n  \"Returns\": \"Die Methode gibt keinen Wert zurück.\",\n  \"Exceptions\": [],\n  \"Params\": [\n    {\n      \"Text\": \"Das Schachspielobjekt, dessen aktueller Zustand als Snapshot gesichert werden soll.\",\n      \"Ref\": \"game\",\n      \"DisplayName\": \"ChessGame\"\n    }\n  ]\n}\n";
-
-        await Task.Delay(5000);
+        var contentString =  await model.GenerateSimpleContent(configuration.Configuration, prompt);
         
         return contentString.ParseAsJson<Comment>();
     }
