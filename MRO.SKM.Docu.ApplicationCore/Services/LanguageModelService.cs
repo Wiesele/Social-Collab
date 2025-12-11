@@ -50,7 +50,7 @@ public class LanguageModelService
         
         prompt = prompt.ReplaceVariables(param);
         
-        var contentString =  await model.GenerateSimpleContent(configuration.Configuration, prompt);
+        var contentString =  await model.GenerateSimpleContent(configuration.Configuration, prompt, schema.ToString());
         
         return contentString.ParseAsJson<Comment>();
     }

@@ -13,10 +13,10 @@ public class Gemini2FlashService: GeminiBaseService, ILanguageModelService
     public string DisplayName { get; } = "Gemini 2.0 Flash";
     
     
-    public async Task<string> GenerateSimpleContent(string config, string prompt)
+    public async Task<string> GenerateSimpleContent(string config, string prompt, string schema)
     {
         var configModel = config.ParseAsJson<GeminiConfig>();
-        var stuff = await this.GenerateSimpleContent(GeminiModels.Gemini20Flash, configModel.ApiKey, prompt);
+        var stuff = await this.GenerateSimpleContent(GeminiModels.Gemini20Flash, configModel.ApiKey, prompt, schema);
 
         return stuff;
     }

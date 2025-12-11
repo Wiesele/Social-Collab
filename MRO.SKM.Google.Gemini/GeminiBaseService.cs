@@ -1,4 +1,5 @@
 ﻿using Google.GenAI;
+using Google.GenAI.Types;
 using MRO.SKM.Google.Gemini.Models;
 using MRO.SKM.SDK.Models;
 using MRO.SKM.SDK.Models.LanaugeModels;
@@ -7,11 +8,18 @@ namespace MRO.SKM.Google.Gemini;
 
 public abstract class GeminiBaseService
 {
-    protected async Task<string> GenerateSimpleContent(string model, string apiKey, string prompt)
+    protected async Task<string> GenerateSimpleContent(string model, string apiKey, string prompt, string schema)
     {
         var client = new Client(apiKey: apiKey, vertexAI: false);
+        
+        var config = new GenerateContentConfig();
+        config.ResponseMimeType = "application/json";
+        config.ResponseJsonSchema = schema;
+        
         var response = await client.Models.GenerateContentAsync(
-            model: model, contents: prompt
+            model: model, 
+            contents: prompt,
+            config: config
         );
 
         var responseContent =  response.Candidates[0].Content.Parts[0].Text;
