@@ -1,0 +1,57 @@
+﻿@using MRO.SKM.SDK.Models.LanaugeModels
+@using MRO.SMK.SDK.Models
+
+@inject LanguageModelService lmService;
+@inject ISnackbar Snackbar;
+
+@if (this.LmFeatures != null)
+{
+    <MudItem>
+        <MudTooltip Text="Styleguide erstellen" Class="ml-3">
+            @if (this.StyleguideIsGenerating)
+            {
+                <MudProgressCircular Indeterminate="true" Size="Size.Small"></MudProgressCircular>
+            }
+            else
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Map" Color="Color.Inherit"
+                               OnClick="GenerateStyleGuide"
+                               Disabled="!this.LmFeatures.GenerateGuide"></MudIconButton>
+            }
+        </MudTooltip>
+    </MudItem>
+}
+
+@code {
+    [Parameter] public Repository Repository { get; set; }
+    private bool StyleguideIsGenerating { get; set; }
+    private LmRepositoryFeatures? LmFeatures { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        this.LmFeatures = this.lmService.GetRepositoryFeatures(this.Repository);
+
+        this.StateHasChanged();
+    }
+
+
+    async Task GenerateStyleGuide()
+    {
+        if (!this.StyleguideIsGenerating)
+        {
+            this.StyleguideIsGenerating = true;
+            this.InvokeAsync(async () =>
+            {
+                await this.lmService.GenerateStyleGuide(this.Repository);
+
+                this.StyleguideIsGenerating = false;
+
+                this.Snackbar.Add("Styleguide erstellt", Severity.Success);
+
+                this.StateHasChanged();
+            });
+        }
+    }
+
+}

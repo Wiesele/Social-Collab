@@ -328,6 +328,12 @@ public class RepositoryService
         
         inDb.GenerateDocPrompt = config.GenerateDocPrompt;
         inDb.GenerateDoc = config.GenerateDoc;
+        inDb.GenerateGuideFileCount = config.GenerateGuideFileCount;
+        inDb.GenerateGuideFileExtensions = config.GenerateGuideFileExtensions;
+        inDb.GenerateGuideFilePickMethod = config.GenerateGuideFilePickMethod;
+        inDb.GenerateGuide = config.GenerateGuide;
+        inDb.GenerateGuidePrompt = config.GenerateGuidePrompt;
+        inDb.GenerateGuideThinkingBudget = config.GenerateGuideThinkingBudget;
 
         this.Database.SaveChanges();
     }

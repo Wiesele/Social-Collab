@@ -9,17 +9,7 @@ namespace MRO.SKM.Google.Gemini;
 
 public class Gemini25FlashLightService: GeminiBaseService, ILanguageModelService
 {
-    public Guid UUID { get; } = new Guid("889C9EB6-F8DB-4ECE-89E7-F64298557252");
-    public string DisplayName { get; } = "Gemini 2.5 Flash Light";
-    
-    
-    public async Task<string> GenerateSimpleContent(string config, string prompt, string schema)
-    {
-        var configModel = config.ParseAsJson<GeminiConfig>();
-        var stuff = await this.GenerateSimpleContent(GeminiModels.Gemini25FlashLight, configModel.ApiKey, prompt, schema);
-
-        return stuff;
-    }
-
- 
+    public override Guid UUID { get; } = new Guid("889C9EB6-F8DB-4ECE-89E7-F64298557252");
+    public override string DisplayName { get; } = "Gemini 2.5 Flash Light";
+    public override string ModelName { get; } = GeminiModels.Gemini25FlashLight;
 }

@@ -4,14 +4,24 @@ using Google.GenAI.Types;
 using MRO.SKM.Google.Gemini.Models;
 using MRO.SKM.SDK.Models;
 using MRO.SKM.SDK.Models.LanaugeModels;
+using MRO.SKM.SDk.Extensions;
+using MRO.SKM.SDK.Interfaces;
+
 
 namespace MRO.SKM.Google.Gemini;
 
-public abstract class GeminiBaseService
+public abstract class GeminiBaseService: ILanguageModelService
 {
-    protected async Task<string> GenerateSimpleContent(string model, string apiKey, string prompt, string schema)
+    
+    public abstract Guid UUID { get; }
+    public abstract string DisplayName { get; }
+    public abstract string ModelName { get;  }
+
+    public async Task<string> GenerateSimpleContent(string configString, string prompt, string schema)
     {
-        var client = new Client(apiKey: apiKey, vertexAI: false);
+        var configModel = configString.ParseAsJson<GeminiConfig>();
+        
+        var client = new Client(apiKey: configModel.ApiKey, vertexAI: false);
         
         var contents = new Content();
         contents.Role = "user";
@@ -30,7 +40,7 @@ public abstract class GeminiBaseService
         config.ThinkingConfig = thinkConfig;
 
         var response = await client.Models.GenerateContentAsync(
-            model: model,
+            model: this.ModelName,
             contents: contents,
             config: config
         );
@@ -38,29 +48,13 @@ public abstract class GeminiBaseService
         var responseContent = response.Candidates[0].Content.Parts[0].Text;
         
         return this.CleanupString(responseContent);
-        //
-        // var contents = new Content();
-        // contents.Role = "user";
-        // contents.Parts = new();
-        // contents.Parts.Add(new()
-        // {
-        //     Text = prompt
-        // });
-        //
-        // var response = client.Models.GenerateContentStreamAsync(
-        //     model: model,
-        //     contents: contents,
-        //     config: config
-        // );
-        //
-        // var result = "";
-        //
-        // await foreach (var chunk in response)
-        // {
-        //     result += chunk.Candidates.First().Content.Parts.First().Text;
-        // }
-        //
-        // return result;
+    }
+
+    public async Task<string> GenerateCodeGuide(string config, string prompt, int thinkingBudget, IEnumerable<byte[]> files)
+    {
+        await Task.Delay(5000);
+        
+        return "Das ist eine Dokumentation";
     }
 
     private string CleanupString(string str)
@@ -90,4 +84,5 @@ public abstract class GeminiBaseService
             e.Lable = "Api Key";
         });
     }
+
 }

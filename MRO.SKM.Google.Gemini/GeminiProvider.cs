@@ -7,11 +7,11 @@ public class GeminiProvider: IProviderConfiguration
 {
     public void RegisterServices(IServiceCollection services)
     {
-        services.AddSingleton<Gemini2FlashService>();
-        services.AddSingleton<Gemini25FlashService>();
-        services.AddSingleton<Gemini25FlashLightService>();
-        services.AddSingleton<ILanguageModelService>( e => e.GetRequiredService<Gemini2FlashService>());
-        services.AddSingleton<ILanguageModelService>( e => e.GetRequiredService<Gemini25FlashService>());
-        services.AddSingleton<ILanguageModelService>( e => e.GetRequiredService<Gemini25FlashLightService>());
+        services.AddScoped<Gemini2FlashService>();
+        services.AddScoped<Gemini25FlashService>();
+        services.AddScoped<Gemini25FlashLightService>();
+        services.AddScoped<ILanguageModelService>( e => e.GetRequiredService<Gemini2FlashService>());
+        services.AddScoped<ILanguageModelService>( e => e.GetRequiredService<Gemini25FlashService>());
+        services.AddScoped<ILanguageModelService>( e => e.GetRequiredService<Gemini25FlashLightService>());
     }
 }

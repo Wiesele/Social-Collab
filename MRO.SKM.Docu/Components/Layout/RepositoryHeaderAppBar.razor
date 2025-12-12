@@ -1,4 +1,6 @@
-﻿@using MRO.SMK.SDK.Models
+﻿@using global::Google.GenAI.Types
+@using MRO.SKM.SDK.Models.LanaugeModels
+@using MRO.SMK.SDK.Models
 @inject IJSRuntime JS
 @inject RepositoryService RepositoryService;
 @inject LoaderService loader;
@@ -23,6 +25,9 @@
             <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Inherit"
                            OnClick="ReloadRepository"></MudIconButton>
         </MudTooltip>
+        
+        <GenerateStyleGuideButton Repository="this.Repository"></GenerateStyleGuideButton>
+
         <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="@Color.Inherit"></MudIconButton>
         <MudToggleIconButton @bind-Toggled="IsDarkMode"
                              Icon="@Icons.Material.Filled.DarkMode" Color="@Color.Inherit"
@@ -42,6 +47,7 @@
     {
         IsDarkMode = !IsDarkMode;
     }
+
 
     async Task ReloadRepository()
     {

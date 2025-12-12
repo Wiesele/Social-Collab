@@ -17,4 +17,5 @@ public class Repository : NamedEntity
     public string SourceProviderConfiguration { get; set; }
     public List<RepositoryLanguage> Languages { get; set; }
     public List<RepositoryAiConfiguration> RepositoryAiConfigurations { get; set; }
+    public string StyleGuide { get; set; }
 }

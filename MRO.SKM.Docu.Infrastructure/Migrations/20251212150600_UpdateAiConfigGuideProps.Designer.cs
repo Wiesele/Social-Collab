@@ -4,6 +4,7 @@ using MRO.SKM.Docu.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MRO.SKM.Docu.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20251212150600_UpdateAiConfigGuideProps")]
+    partial class UpdateAiConfigGuideProps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,9 +164,6 @@ namespace MRO.SKM.Docu.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GenerateGuideThinkingBudget")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("ProviderId")
                         .HasColumnType("uniqueidentifier");
 
@@ -216,10 +216,6 @@ namespace MRO.SKM.Docu.Infrastructure.Migrations
 
                     b.Property<Guid>("SourceProviderService")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("StyleGuide")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

@@ -1,12 +1,13 @@
 ﻿@page "/repository/{id}/settings/ai/{LLMConfigId}"
 @using Microsoft.CodeAnalysis.CSharp.Syntax
+@using MRO.SKM.SDK.Enums
 @inherits BaseRepoPage
 
 <PageTitle>@LanguageModel.DisplayName verwalten</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.Large">
     <h3>@LanguageModel.DisplayName verwalten</h3>
-
+    <h4>Dokumentation-Einstellungen</h4>
     <MudCheckBox @bind-Value="Config.GenerateDoc" For="() => Config.GenerateDoc" Label="Dokumentation erstellen"
                  Color="Color.Primary"></MudCheckBox>
 
@@ -16,6 +17,44 @@
                   Label="Dokumentations Prompt"
                   AutoGrow="true"></MudTextField>
     
-    <MudButton OnClick="this.SaveChanges">Speichern</MudButton>
+    <MudDivider Style="margin-top: 20px; margin-bottom: 20px">Test</MudDivider>
+
+    <h4>Guide-Einstellungen</h4>
+    
+    
+    <MudCheckBox @bind-Value="Config.GenerateGuide" For="() => Config.GenerateGuide" Label="Guide erstellen"
+                 Color="Color.Primary"></MudCheckBox>
+    
+    <MudTextField For="() => Config.GenerateGuidePrompt"
+                  @bind-Value="@Config.GenerateGuidePrompt"
+                  Variant="Variant.Outlined"
+                  Label="Guide Prompt"
+                  AutoGrow="true"></MudTextField>
+    
+    <MudNumericField For="() => Config.GenerateGuideThinkingBudget"
+                     @bind-Value="@Config.GenerateGuideThinkingBudget"
+                     Variant="Variant.Outlined"
+                     Label="Denkbudget"></MudNumericField>
+
+    
+    <MudNumericField For="() => Config.GenerateGuideFileCount"
+                     @bind-Value="@Config.GenerateGuideFileCount"
+                     Variant="Variant.Outlined"
+                     Label="Guide Anzahl Dateien"></MudNumericField>
+    
+    <MudTextField For="() => Config.GenerateGuideFileExtensions"
+                  @bind-Value="@Config.GenerateGuideFileExtensions"
+                  Variant="Variant.Outlined"
+                  Label="Guide Dateierweiterung (trennen mit ;)"></MudTextField>
+    
+    <MudSelect For="() => Config.GenerateGuideFilePickMethod"
+               @bind-Value="@Config.GenerateGuideFilePickMethod"
+               Variant="Variant.Outlined"
+               Label="Guide Methode für Dateiauswahl">
+        <MudSelectItem Value="GenerateGuideFilePickMethod.Largest">Große Dateien</MudSelectItem>
+        <MudSelectItem Value="GenerateGuideFilePickMethod.Random">Zufällige Dateien</MudSelectItem>
+    </MudSelect>
+    
+    <MudButton OnClick="this.SaveChanges" Color="Color.Primary" Variant="Variant.Filled">Speichern</MudButton>
 
 </MudContainer>

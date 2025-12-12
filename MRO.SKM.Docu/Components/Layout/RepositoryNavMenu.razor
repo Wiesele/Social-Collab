@@ -12,7 +12,7 @@
         <MudNavLink Href="@GetUrl("code")" Match="NavLinkMatch.All"
                     Icon="@Icons.Material.Outlined.Assignment">Code
         </MudNavLink>
-        <MudNavGroup Title="Dokumentieren">
+        <MudNavGroup Title="Dokumentieren" Icon="@Icons.Material.Outlined.Edit">
             <MudNavLink Href="@GetUrl("comment")" Match="NavLinkMatch.All"
                         Icon="@Icons.Material.Outlined.Assignment">Nach Datei
             </MudNavLink>
@@ -20,6 +20,10 @@
                         Icon="@Icons.Material.Outlined.Assignment">Fehlende Doku
             </MudNavLink>
         </MudNavGroup>
+        
+        <MudNavLink Href="@GetUrl("guide")" Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Outlined.Map" Disabled="Repository.StyleGuide.IsNullOrWhiteSpace()">Styleguide
+        </MudNavLink>
 
         <MudDivider></MudDivider>
 
