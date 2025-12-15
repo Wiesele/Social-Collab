@@ -78,5 +78,20 @@ namespace MRO.SKM.Google.Gemini {
                 return ResourceManager.GetString("GenerateDocumentation", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Erstelle anhand der verfügbaren Dateien einen detaillierten Styleguide für Entwickler. 
+        ///
+        ///Antworte mit HTML und CSS Code, damit deine Antwort direkt in einer Webseite dargestellt werden kann.
+        ///Also Frontend-Framework für den Styleguide steht dir Bootstrap zur Verfügung. Das Projekt, über welches du den Styleguide erstellen sollst, verwendet kein Bootstrap im Frontend.
+        ///Du musst Bootstrap nicht erneut mit &lt;script&gt; oder &lt;style&gt; einbinden. 
+        ///
+        ///Wenn du CSS-Klassen verwendest, stelle sicher dass deine CSS-Klass [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string GenerateGuide {
+            get {
+                return ResourceManager.GetString("GenerateGuide", resourceCulture);
+            }
+        }
     }
 }

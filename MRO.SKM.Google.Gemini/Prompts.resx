@@ -32,4 +32,13 @@ Antworte in folgendem Format:
 
 Antworte auf Deutsch.</value>
     </data>
+    <data name="GenerateGuide" xml:space="preserve">
+        <value>Erstelle anhand der verfügbaren Dateien einen detaillierten Styleguide für Entwickler. 
+
+Antworte mit HTML und CSS Code, damit deine Antwort direkt in einer Webseite dargestellt werden kann.
+Also Frontend-Framework für den Styleguide steht dir Bootstrap zur Verfügung. Das Projekt, über welches du den Styleguide erstellen sollst, verwendet kein Bootstrap im Frontend.
+Du musst Bootstrap nicht erneut mit &lt;script&gt; oder &lt;style&gt; einbinden. 
+
+Wenn du CSS-Klassen verwendest, stelle sicher dass deine CSS-Klassen nur auf den von dir erstellten HTML-Code angewendet werden. Gebe dazu jeder Klasse ein passendes Scope.</value>
+    </data>
 </root>

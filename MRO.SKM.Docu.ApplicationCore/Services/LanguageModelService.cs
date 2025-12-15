@@ -138,11 +138,15 @@ public class LanguageModelService
         
         var files = this.GetGuideFilePaths(config.Repository.Location, config);
         
-        var data = new List<byte[]>();
+        var data = new List<UploadFile>();
         foreach (var file in files)
         {
             var fileData = await File.ReadAllBytesAsync(file);
-            data.Add(fileData);
+            data.Add(new ()
+            {
+                FileData = fileData,
+                FileName = Path.GetFileName(file)
+            });
         }
 
         var guide = await service.GenerateCodeGuide(config.Configuration, config.GenerateGuidePrompt, config.GenerateGuideThinkingBudget, data);

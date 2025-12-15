@@ -98,6 +98,8 @@ public class RepositoryService
         var defaults = service.GetDefaults();
 
         repoLM.GenerateDocPrompt = defaults.GenerateElementDocumentationSystemPrompt;
+        repoLM.GenerateGuidePrompt = defaults.GenerateGuideSystemPrompt;
+        
         repoLM.Configuration = sourceProviderConfig.AsJson();
         
         var repo = this.GetById(repository.Id);
