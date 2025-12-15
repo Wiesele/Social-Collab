@@ -13,6 +13,7 @@ public abstract class BaseRepoPage: ComponentBase
         this.RepositoryService = repositoryService;
     }
 
+
     protected RepositoryService RepositoryService { get; set; }
     
     [Parameter] 

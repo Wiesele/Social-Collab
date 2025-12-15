@@ -10,6 +10,7 @@ using MRO.SKM.SDK.Models;
 using MRO.SKM.SDK.Models.Comments;
 using MRO.SKM.SDK.Models.LanaugeModels;
 using MRO.SMK.SDK.Models;
+using MudBlazor;
 
 namespace MRO.SMK.Docu.ApplicationCore.Services;
 
@@ -17,10 +18,13 @@ public class LanguageModelService
 {
     private IDatabaseContext DatabaseContext { get; set; }
     private IEnumerable<ILanguageModelService> LanugageModels { get; set; }
+    private ISnackbar Snackbar { get; set; }
     
     public LanguageModelService(IEnumerable<ILanguageModelService> languageModels,
-        IDatabaseContext databaseContext) 
+        IDatabaseContext databaseContext,
+        ISnackbar snackbar) 
     {
+        this.Snackbar = snackbar;
         this.DatabaseContext = databaseContext;
         this.LanugageModels = languageModels;
     }
@@ -149,11 +153,18 @@ public class LanguageModelService
             });
         }
 
-        var guide = await service.GenerateCodeGuide(config.Configuration, config.GenerateGuidePrompt, config.GenerateGuideThinkingBudget, data);
+        try
+        {
+            var guide = await service.GenerateCodeGuide(config.Configuration, config.GenerateGuidePrompt, config.GenerateGuideThinkingBudget, data);
+            var repo = this.DatabaseContext.Repositories.First(e => e.Id == repository.Id);
+            repo.StyleGuide = guide;
         
-        var repo = this.DatabaseContext.Repositories.First(e => e.Id == repository.Id);
-        repo.StyleGuide = guide;
-        
-        await this.DatabaseContext.SaveChangesAsync();
+            await this.DatabaseContext.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            this.Snackbar.Add(e.Message, Severity.Error);
+        }
     }
 }

@@ -17,9 +17,9 @@ public class RepositoryAiConfiguration : BaseEntity
 
     // Properies für Guidline generierung
     public bool GenerateGuide { get; set; }
-    public string GenerateGuidePrompt { get; set; }
+    public string? GenerateGuidePrompt { get; set; }
     public int GenerateGuideFileCount { get; set; }
-    public string GenerateGuideFileExtensions { get; set; }
+    public string? GenerateGuideFileExtensions { get; set; }
     public GenerateGuideFilePickMethod  GenerateGuideFilePickMethod { get; set; }
     public int GenerateGuideThinkingBudget { get; set; }
 }

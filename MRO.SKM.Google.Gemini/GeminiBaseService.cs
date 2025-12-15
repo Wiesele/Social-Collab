@@ -12,19 +12,18 @@ using File = Google.GenAI.Types.File;
 
 namespace MRO.SKM.Google.Gemini;
 
-public abstract class GeminiBaseService: ILanguageModelService
+public abstract class GeminiBaseService : ILanguageModelService
 {
-    
     public abstract Guid UUID { get; }
     public abstract string DisplayName { get; }
-    public abstract string ModelName { get;  }
+    public abstract string ModelName { get; }
 
     public async Task<string> GenerateSimpleContent(string configString, string prompt, string schema)
     {
         var configModel = configString.ParseAsJson<GeminiConfig>();
-        
+
         var client = new Client(apiKey: configModel.ApiKey, vertexAI: false);
-        
+
         var contents = new Content();
         contents.Role = "user";
         contents.Parts = new();
@@ -46,20 +45,20 @@ public abstract class GeminiBaseService: ILanguageModelService
             contents: contents,
             config: config
         );
-        
+
         var responseContent = response.Candidates[0].Content.Parts[0].Text;
-        
+
         return this.CleanupString(responseContent);
     }
 
-    public async Task<string> GenerateCodeGuide(string configString, string prompt, int thinkingBudget, IEnumerable<UploadFile> files)
+    public async Task<string> GenerateCodeGuide(string configString, string prompt, int thinkingBudget,
+        IEnumerable<UploadFile> files)
     {
         var configModel = configString.ParseAsJson<GeminiConfig>();
-        var fileDataList = new List<File>();
-        
-        var client = new Client(apiKey: configModel.ApiKey, vertexAI: false);
 
-        
+        var client = new Client(apiKey: configModel.ApiKey, vertexAI: false,
+            httpOptions: new HttpOptions() { Timeout = 300000 });
+
         var contents = new Content();
         contents.Role = "user";
         contents.Parts = new();
@@ -67,19 +66,9 @@ public abstract class GeminiBaseService: ILanguageModelService
         {
             Text = prompt
         });
-        
+
         foreach (var file in files)
         {
-            // var fileData = await client.Files.UploadAsync(file.FileData, file.FileName);
-            //
-            // fileDataList.Add(fileData);
-            // var fileForModel = new FileData()
-            // {
-            //     FileUri = fileData.Uri,
-            //     DisplayName = fileData.DisplayName,
-            //     MimeType = "text/plain"
-            // };
-            
             contents.Parts.Add(new()
             {
                 InlineData = new Blob()
@@ -89,39 +78,22 @@ public abstract class GeminiBaseService: ILanguageModelService
                 }
             });
         }
-        
+
         var thinkConfig = new ThinkingConfig();
         thinkConfig.ThinkingBudget = thinkingBudget;
-        
+
         var config = new GenerateContentConfig();
         config.ResponseMimeType = "text/plain";
         config.ThinkingConfig = thinkConfig;
 
-        GenerateContentResponse reponse = null;
-        try
-        {
-            reponse = await client.Models.GenerateContentAsync(
-                model: this.ModelName,
-                contents: contents,
-                config: config
-            );
-        }
-        catch (Exception e)
-        {
-        }
+        var reponse = await client.Models.GenerateContentAsync(
+            model: this.ModelName,
+            contents: contents,
+            config: config
+        );
 
-        foreach (var file in fileDataList)
-        {
-            await client.Files.DeleteAsync(file.Name);
-        }
-
-        if (reponse == null)
-        {
-            return "";
-        }
-        
         var generatedResponse = reponse.Candidates[0].Content.Parts[0].Text;
-        
+
         // return Markdown.ToHtml(generatedResponse);
         return CleanupString(generatedResponse);
     }
@@ -132,6 +104,7 @@ public abstract class GeminiBaseService: ILanguageModelService
         {
             str = str.Replace("```json", "").Replace("```", "");
         }
+
         if (str.Contains("```html"))
         {
             str = str.Replace("```html", "").Replace("```", "");
@@ -146,7 +119,7 @@ public abstract class GeminiBaseService: ILanguageModelService
 
         defaults.GenerateElementDocumentationSystemPrompt = Prompts.GenerateDocumentation;
         defaults.GenerateGuideSystemPrompt = Prompts.GenerateGuide;
-        
+
         return defaults;
     }
 
@@ -158,5 +131,4 @@ public abstract class GeminiBaseService: ILanguageModelService
             e.Lable = "Api Key";
         });
     }
-
 }

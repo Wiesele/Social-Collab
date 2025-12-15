@@ -7,8 +7,10 @@
 <MudContainer MaxWidth="MaxWidth.Large">
     <h3>Styleguide</h3>
 
-    @((MarkupString)Repository.StyleGuide)
+    <iframe src="/repository/@Repository.Id/guide/display" id="styleIframe"></iframe>
+
 </MudContainer>
+
 @code {
     
 }

@@ -1,0 +1,19 @@
+﻿@page "/repository/{id}/guide/display"
+@using MRO.SMK.SDK.Models
+@layout EmptyLayout
+@inject RepositoryService repoSerive
+
+@((MarkupString)Repository.StyleGuide)
+
+@code {
+    [Parameter] public string Id { get; set; }
+    private Repository Repository { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        this.Repository = this.repoSerive.GetById(this.Id);
+        
+        return base.OnInitializedAsync();
+    }
+
+}
