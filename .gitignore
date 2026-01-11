@@ -137,3 +137,5 @@ _NCrunch*
 
 
 */appsettings.[Dd]evelopment.json
+
+*/node_modules/*
