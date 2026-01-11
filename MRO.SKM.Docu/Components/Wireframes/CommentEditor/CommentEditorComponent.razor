@@ -1,4 +1,5 @@
 ﻿@using BlazorMonaco.Editor
+@using MRO.SKM.SDK.Models.Comments
 
 <MudGrid Spacing="15" Style="height: 100%">
     <MudItem md="6" Style="height: 100%">
@@ -49,12 +50,15 @@
                             <MudGrid>
                                 @foreach (var param in Model.Params)
                                 {
-                                    var aiSuggestion = AiComment.Params.FirstOrDefault(e => e.Ref == param.Ref);
-                                    if (aiSuggestion == null)
+                                    var aiSuggestion = new CommentParameter();
+                                    if (AiComment != null)
                                     {
-                                        aiSuggestion = new();
+                                        aiSuggestion = AiComment.Params.FirstOrDefault(e => e.Ref == param.Ref);
+                                        if (aiSuggestion == null)
+                                        {
+                                            aiSuggestion = new();
+                                        }
                                     }
-                                    
                                     <MudItem md="12">
                                         <CommentEditorInput @bind-BindingValue="@param.Text" 
                                                             AiDocumentationEnabled="@RepositoryFeatures.GenerateDoc" 

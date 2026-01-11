@@ -6,7 +6,9 @@ using MRO.SKM.SDk.Extensions;
 using MRO.SKM.SDK.Interfaces;
 using MRO.SKM.SDK.Models;
 using MRO.SMK.Docu.ApplicationCore.Extensions;
+using MRO.SMK.Docu.ApplicationCore.Models;
 using MRO.SMK.SDK.Models;
+using MudBlazor;
 
 namespace MRO.SMK.Docu.ApplicationCore.Services;
 
@@ -49,12 +51,53 @@ public class RepositoryService
         repository.Location = Path.Join(settings.Git.LocalFolder, repository.Name + "_" + Guid.NewGuid());
 
         this.Database.Repositories.Add(repository);
+
         await this.Database.SaveChangesAsync();
 
-
-    await this.SourceControlService.CloneRepository(repository);
-
+        await this.SourceControlService.CloneRepository(repository);
+        
         return repository;
+    }
+
+    public List<CoverageChartData> GetCoverageChartData(string repoId)
+    {
+        var repo = this.GetById(repoId);
+        var classes = this.Database.CodeFiles
+            .Include(e => e.Classes)
+            .ThenInclude(e => e.Methods)
+            .Where(e => e.RepositoryId == repo.Id)
+            .ToList();
+
+        var commentedCount = 0;
+        var totalCount = 0;
+
+        foreach (var file in classes)
+        {
+            foreach (var item in file.Classes)
+            {
+                if (!item.Comment.IsNullOrWhiteSpace())
+                {
+                    commentedCount++;
+                }
+                
+                commentedCount += item.Methods.Where(e => !e.Comment.IsNullOrWhiteSpace()).Count();
+                totalCount += item.Methods.Count() + 1;
+            }
+        }
+        
+        var lst = new List<CoverageChartData>();
+        lst.Add(new()
+        {
+            DisplayName = "Unkommentiert",
+            Count = totalCount - commentedCount,
+        });
+        lst.Add(new()
+        {
+            DisplayName = "Kommentiert",
+            Count = commentedCount,
+        });
+
+        return lst;
     }
 
     public Repository GetById(string id)

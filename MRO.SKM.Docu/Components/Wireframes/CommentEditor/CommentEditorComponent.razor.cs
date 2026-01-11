@@ -101,6 +101,11 @@ public partial class CommentEditorComponent : ComponentBase
 
     private void LoadAiSuggestions()
     {
+        if (!this.RepositoryFeatures.GenerateDoc)
+        {
+            return;
+        }
+        
         this.AiSuggestionsLoaded = true;
         this.InvokeAsync(async () =>
         {

@@ -1,2 +1,2 @@
 # Idee
-"Tool zum Verwalten von XML-Dokumentationen" 
+"Tool zum Verwalten von quellcodenahen Dokumentationen" 
