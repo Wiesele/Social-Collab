@@ -23,7 +23,6 @@ public class DatabaseContext : DbContext, IDatabaseContext
     public async Task<int> SaveChangesAsync()
     {
         return await base.SaveChangesAsync();
-        this.SaveChanges();
     }
 
     public IDbContextTransaction BeginTransaction()
