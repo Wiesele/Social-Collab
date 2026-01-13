@@ -1,3 +1,2 @@
 # Sourcecode Dokumentieren
-
-## Schlechte Dokumentation
+<!-- ## Schlechte Dokumentation -->
